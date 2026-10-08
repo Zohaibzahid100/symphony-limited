@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 48">
+  <rect width="42" height="42" rx="10" y="3" fill="url(#lg)"/>
+  <defs>
+    <linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#8b6914"/>
+    </linearGradient>
+  </defs>
+  <text x="21" y="30" text-anchor="middle" font-family="Georgia,serif" font-weight="900" font-size="22" fill="#0a0c10">S</text>
+  <text x="52" y="20" font-family="Georgia,serif" font-weight="700" font-size="13" fill="#d4af37">Symphony</text>
+  <text x="52" y="35" font-family="Georgia,serif" font-weight="700" font-size="13" fill="#f0ece2">Limited</text>
+  <text x="52" y="46" font-family="sans-serif" font-size="7" fill="#5c6478" letter-spacing="1">IT EDUCATION INSTITUTE</text>
+</svg>

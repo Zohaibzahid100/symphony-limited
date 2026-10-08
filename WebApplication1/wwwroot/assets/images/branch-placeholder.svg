@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 220">
+  <rect width="400" height="220" fill="#10141c"/>
+  <rect width="400" height="2" fill="#d4af37" opacity="0.5"/>
+  <text x="200" y="120" text-anchor="middle" font-size="60" fill="#d4af37" opacity="0.3">🏢</text>
+</svg>

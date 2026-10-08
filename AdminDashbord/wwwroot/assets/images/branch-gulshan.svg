@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="220" viewBox="0 0 400 220">
+  <rect width="400" height="220" rx="12" fill="#10141c"/>
+  <rect x="0" y="0" width="400" height="3" fill="#d4af37"/>
+  <text x="200" y="105" font-family="Arial" font-size="52" text-anchor="middle">&#127970;</text>
+  <text x="200" y="152" font-family="Georgia,serif" font-size="18" font-weight="bold" fill="#d4af37" text-anchor="middle">Gulshan Branch</text>
+  <text x="200" y="182" font-family="Arial,sans-serif" font-size="12" fill="#5c6478" text-anchor="middle">Gulshan-e-Iqbal, Karachi</text>
+</svg>

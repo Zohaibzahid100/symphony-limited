@@ -1,0 +1,218 @@
+﻿@using WebApplication1.Models
+@{
+    ViewData["Title"] = "My Results";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    var entranceResults = (List<EntranceResult>)ViewBag.EntranceResults;
+    var finalResults = (List<FinalResult>)ViewBag.FinalResults;
+    var today = (DateOnly)ViewBag.Today;
+    var enrolledCourseIds = (List<int>)ViewBag.EnrolledCourseIds;
+}
+
+<div class="dash-welcome">
+    <h2>My <span style="color:var(--gold);">Results</span></h2>
+    <p>Your entrance exam and final exam performance history.</p>
+</div>
+
+<div class="table-wrapper" style="margin-bottom:24px;">
+    <div class="table-header"><h4>Entrance Exam Results</h4></div>
+    <table>
+        <thead>
+            <tr><th>Exam</th><th>Marks</th><th>Percentage</th><th>Status</th><th>Assigned Track</th><th>Enrollment</th></tr>
+        </thead>
+        <tbody>
+            @if (entranceResults.Any())
+            {
+                @foreach (var r in entranceResults)
+                {
+                    var announceDate = r.EntranceExam?.ResultAnnouncementDate;
+                    bool announced = announceDate == null || today >= announceDate;
+                    bool isEnrolled = r.EntranceExam != null && enrolledCourseIds.Contains(r.EntranceExam.CourseId);
+                    <tr>
+                        <td>@r.EntranceExam?.ExamTitle</td>
+                        @if (!announced)
+                        {
+                            <td colspan="5">
+                                <span class="badge badge-blue"><i class="bi bi-hourglass-split"></i> Result will be announced on @announceDate?.ToString("dd MMM yyyy")</span>
+                            </td>
+                        }
+                        else
+                        {
+                            <td>@r.MarksObtained / @r.TotalMarks</td>
+                            <td>
+                                <div class="progress-bar" style="width:90px;display:inline-block;vertical-align:middle;margin-right:8px;">
+                                    <div class="progress-fill" style="width:@(r.Percentage ?? 0)%;"></div>
+                                </div>
+                                <span class="score-percent" style="font-size:.9rem;">@(r.Percentage)%</span>
+                            </td>
+                            <td><span class="badge @(r.ResultStatus == "Pass" ? "badge-green" : "badge-red")">@r.ResultStatus</span></td>
+                            <td>@(r.AssignedTrack?.TrackName ?? "—")</td>
+                            <td>
+                                @if (isEnrolled)
+                                {
+                                    <span class="badge badge-green"><i class="bi bi-check2"></i> Enrolled</span>
+                                }
+                                else if (r.AssignedTrackId != null)
+                                {
+                                    <button class="btn btn-gold btn-sm" onclick="openEnrollModal(@r.EntranceExamId)">Enroll Now</button>
+                                }
+                                else
+                                {
+                                    <span style="color:var(--text-muted);font-size:.8rem;">No track assigned</span>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="6" style="color:var(--text-muted);">No entrance exam results yet.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="table-wrapper">
+    <div class="table-header"><h4>Final Exam Results</h4></div>
+    <table>
+        <thead>
+            <tr><th>Exam</th><th>Marks</th><th>Percentage</th><th>Grade</th><th>Status</th><th>Certificate</th></tr>
+        </thead>
+        <tbody>
+            @if (finalResults.Any())
+            {
+                @foreach (var r in finalResults)
+                {
+                    var announceDate = r.FinalExam?.ResultAnnouncementDate;
+                    bool announced = announceDate == null || today >= announceDate;
+                    <tr>
+                        <td>@r.FinalExam?.ExamTitle</td>
+                        @if (!announced)
+                        {
+                            <td colspan="5">
+                                <span class="badge badge-blue"><i class="bi bi-hourglass-split"></i> Result will be announced on @announceDate?.ToString("dd MMM yyyy")</span>
+                            </td>
+                        }
+                        else
+                        {
+                            <td>@r.MarksObtained / @r.TotalMarks</td>
+                            <td>
+                                <div class="progress-bar" style="width:90px;display:inline-block;vertical-align:middle;margin-right:8px;">
+                                    <div class="progress-fill" style="width:@r.Percentage%;"></div>
+                                </div>
+                                <span class="score-percent" style="font-size:.9rem;">@r.Percentage%</span>
+                            </td>
+                            <td>@(r.Grade ?? "—")</td>
+                            <td><span class="badge @(r.ResultStatus == "Pass" ? "badge-green" : "badge-red")">@(r.ResultStatus ?? "Pending")</span></td>
+                            <td>
+                                @if (r.ResultStatus == "Pass")
+                                {
+                                    <a asp-controller="FinalExam" asp-action="Certificate" asp-route-resultId="@r.ResultId" class="btn btn-gold btn-sm" target="_blank"><i class="bi bi-award"></i> View / Download</a>
+                                }
+                                else
+                                {
+                                    <span style="color:var(--text-muted);font-size:.8rem;">—</span>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="6" style="color:var(--text-muted);">No final exam results yet.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- ENROLL NOW MODAL -->
+<div class="modal-overlay" id="enrollModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h4>Enroll in Course</h4>
+            <button class="modal-close" onclick="closeModal('enrollModal')"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-body">
+            <div style="background:var(--bg-card2);border:1px solid var(--border-light);border-radius:var(--radius-md);padding:18px;margin-bottom:16px;" id="enrollDetailBox">
+                <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;">Course</div>
+                <strong id="enrollCourseName">Loading...</strong>
+                <div style="font-size:.85rem;color:var(--gold);margin-top:6px;">Track: <span id="enrollTrackName">—</span></div>
+                <div style="font-size:.85rem;color:var(--text-secondary);margin-top:6px;">Duration: <span id="enrollDuration">—</span> Months</div>
+                <div style="font-size:.85rem;color:var(--gold);margin-top:6px;">Course Fee: PKR <span id="enrollFee">—</span></div>
+            </div>
+            <div class="form-group"><label class="form-label">Branch</label>
+                <select id="enrollBranchId" class="form-control">
+                    @foreach (var b in (List<Branch>)ViewBag.Branches)
+                    {
+                        <option value="@b.BranchId">@b.BranchName — @b.BranchCity</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group"><label class="form-label">Payment Method</label>
+                <select id="enrollPaymentMethod" class="form-control"><option>Cash</option><option>Cheque</option><option>Draft</option></select>
+            </div>
+            <div style="background:var(--gold-dim);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;font-size:.8rem;color:var(--text-secondary);">
+                <i class="bi bi-info-circle" style="color:var(--gold);margin-right:5px;"></i>
+                Your course fee payment is recorded immediately — enrollment is confirmed only once payment status is "Paid".
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('enrollModal')">Cancel</button>
+            <button id="enrollSubmitBtn" class="btn btn-gold" onclick="submitEnrollNow()">Pay &amp; Enroll <i class="bi bi-check2"></i></button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let enrollExamId = null;
+    function openEnrollModal(examId) {
+        enrollExamId = examId;
+        document.getElementById('enrollCourseName').textContent = 'Loading...';
+        document.getElementById('enrollTrackName').textContent = '—';
+        document.getElementById('enrollDuration').textContent = '—';
+        document.getElementById('enrollFee').textContent = '—';
+        document.getElementById('enrollModal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+
+        fetch(`/EntranceExam/EnrollInfo?entranceExamId=${examId}`)
+            .then(r => r.json())
+            .then(data => {
+                if (!data.success) {
+                    showToast(data.message || 'Could not load course details.', 'info');
+                    closeModal('enrollModal');
+                    return;
+                }
+                document.getElementById('enrollCourseName').textContent = data.courseName;
+                document.getElementById('enrollTrackName').textContent = data.trackName;
+                document.getElementById('enrollDuration').textContent = data.durationMonths;
+                document.getElementById('enrollFee').textContent = Number(data.fee).toLocaleString();
+            })
+            .catch(() => { showToast('Network error loading course details.', 'info'); closeModal('enrollModal'); });
+    }
+    function submitEnrollNow() {
+        const branchId = document.getElementById('enrollBranchId').value;
+        const paymentMethod = document.getElementById('enrollPaymentMethod').value;
+        if (!branchId) { showToast('Please select a branch.', 'error'); return; }
+
+        btnLoad('enrollSubmitBtn', true);
+        fetch('/EntranceExam/EnrollNow', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `entranceExamId=${encodeURIComponent(enrollExamId)}&branchId=${encodeURIComponent(branchId)}&paymentMethod=${encodeURIComponent(paymentMethod)}`
+        })
+        .then(r => r.json())
+        .then(data => {
+            btnLoad('enrollSubmitBtn', false);
+            closeModal('enrollModal');
+            if (data.success) {
+                showToast('Payment recorded — enrolled successfully! Check My Enrollments.', 'success');
+                setTimeout(() => window.location.reload(), 900);
+            } else {
+                showToast(data.message || 'Could not enroll.', 'info');
+            }
+        })
+        .catch(() => { btnLoad('enrollSubmitBtn', false); closeModal('enrollModal'); showToast('Network error — try again.', 'info'); });
+    }
+</script>
+

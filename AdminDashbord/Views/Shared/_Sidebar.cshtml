@@ -1,0 +1,156 @@
+﻿@{
+    var controller =
+        ViewContext.RouteData.Values["controller"]?.ToString();
+}
+<aside class="sidebar">
+
+    <div class="sidebar-user">
+
+        <img src="~/assets/images/logo.svg"
+             alt="Logo"
+             class="sidebar-brand-logo" />
+
+        <div class="sidebar-user-info">
+            <div class="sidebar-name">Admin Panel</div>
+            <div class="sidebar-roll">Symphony Limited</div>
+        </div>
+
+    </div>
+
+    <nav class="sidebar-nav">
+
+        <div class="sidebar-section-label">Main</div>
+
+        <a asp-controller="Dashbord"
+           asp-action="dashbord"
+           class="sidebar-link @(controller == "Dashbord" ? "active" : "")">
+
+            <i class="bi bi-grid-1x2"></i>
+            Dashboard
+        </a>
+
+        <div class="sidebar-section-label">Academic Setup</div>
+        <a asp-controller="Branches"
+           asp-action="Index"
+           class="sidebar-link @(controller == "Branches" ? "active" : "")">
+
+            <i class="bi bi-building"></i>
+            Branches
+        </a>
+
+        <a asp-controller="Courses"
+           asp-action="Index"
+           class="sidebar-link @(controller == "Courses" ? "active" : "")"> 
+
+            <i class="bi bi-collection"></i>
+            Courses
+        </a>
+
+        <a asp-controller="TrackRules"
+           asp-action="Index"
+           class="sidebar-link @(controller == "TrackRules" ? "active" : "")">
+            <i class="bi bi-sliders"></i>
+            Track Assignment Rules
+        </a>
+
+        <div class="sidebar-section-label">Admissions</div>
+
+        <a asp-controller="EntranceExams"
+           asp-action="Index"
+           class="sidebar-link @(controller == "EntranceExams" ? "active" : "")">
+            <i class="bi bi-pencil-square"></i>
+            Entrance Exams & MCQs
+        </a>
+
+        <a asp-controller="EntranceResults"
+           asp-action="Index"
+           class="sidebar-link @(controller == "EntranceResults" ? "active" : "")">
+            <i class="bi bi-bar-chart"></i>
+            Entrance Results
+        </a>
+
+        <a asp-controller="Enrollments"
+           asp-action="Index"
+           class="sidebar-link @(controller == "Enrollments" ? "active" : "")">
+            <i class="bi bi-journal-check"></i>
+            Student Enrollments
+        </a>
+
+        <div class="sidebar-section-label">Examinations</div>
+
+        <a asp-controller="FinalExams"
+           asp-action="Index"
+           class="sidebar-link @(controller == "FinalExams" ? "active" : "")">
+            <i class="bi bi-file-earmark-text"></i>
+            Final Exams & MCQs
+        </a>
+
+        <a asp-controller="FinalResults"
+           asp-action="Index"
+           class="sidebar-link @(controller == "FinalResults" ? "active" : "")">
+            <i class="bi bi-trophy"></i>
+            Final Results
+        </a>
+
+        <div class="sidebar-section-label">Labs & Finance</div>
+
+        <a asp-controller="LabSessions"
+           asp-action="Index"
+           class="sidebar-link @(controller == "LabSessions" ? "active" : "")">
+            <i class="bi bi-laptop"></i>
+            Lab Sessions
+        </a>
+
+        <a asp-controller="Payments"
+           asp-action="Index"
+           class="sidebar-link @(controller == "Payments" ? "active" : "")">
+            <i class="bi bi-wallet2"></i>
+            Payments
+        </a>
+
+        <div class="sidebar-section-label">People</div>
+
+        <a asp-controller="Users"
+           asp-action="Index"
+           class="sidebar-link @(controller == "Users" ? "active" : "")">
+            <i class="bi bi-people"></i>
+            Users
+        </a>
+
+        <a asp-controller="Students"
+           asp-action="Index"
+           class="sidebar-link @(controller == "Students" ? "active" : "")">
+            <i class="bi bi-person-badge"></i>
+            Students
+        </a>
+
+        <div class="sidebar-section-label">Website Content</div>
+
+        <a asp-controller="Content"
+           asp-action="Index"
+           class="sidebar-link @(controller == "Content" ? "active" : "")">
+            <i class="bi bi-info-circle"></i>
+            FAQs & About Us
+        </a>
+
+        <div class="sidebar-section-label mt-2">
+            Account
+        </div>
+
+        <a asp-controller="AdminProfile"
+           asp-action="Profile"
+           class="sidebar-link @(controller == "AdminProfile" ? "active" : "")">
+            <i class="bi bi-person-circle"></i>
+            Admin Profile
+        </a>
+
+        <a asp-controller="Account"
+           asp-action="Logout"
+           class="sidebar-link sidebar-link-logout">
+            <i class="bi bi-box-arrow-right"></i>
+            Logout
+        </a>
+
+    </nav>
+
+</aside>

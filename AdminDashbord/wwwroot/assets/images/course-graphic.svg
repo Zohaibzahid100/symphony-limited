@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="220" viewBox="0 0 400 220">
+  <rect width="400" height="220" rx="12" fill="#10141c"/>
+  <rect x="0" y="0" width="400" height="3" fill="#2ecc8f"/>
+  <text x="200" y="105" font-family="Arial" font-size="52" text-anchor="middle">&#127912;</text>
+  <text x="200" y="150" font-family="Georgia,serif" font-size="18" font-weight="bold" fill="#2ecc8f" text-anchor="middle">Graphic Designing</text>
+  <text x="200" y="178" font-family="Arial,sans-serif" font-size="12" fill="#5c6478" text-anchor="middle">Basic (DISM) &#183; Advanced (CPISM)</text>
+</svg>

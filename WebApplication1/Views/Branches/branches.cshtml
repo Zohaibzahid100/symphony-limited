@@ -1,0 +1,106 @@
+﻿@{
+    ViewData["Title"] = "Branches";
+}
+
+<div class="page-hero">
+    <div class="container text-center">
+        <div class="breadcrumb"><a href="../index.html">Home</a><i class="bi bi-chevron-right"></i><span>Branches</span></div>
+        <div class="section-tag" style="margin:0 auto 16px;"><i class="bi bi-building"></i> Our Locations</div>
+        <h1>Our <span style="color:var(--gold);">Branches</span></h1>
+        <p style="max-width:520px;margin:12px auto 0;color:var(--text-secondary);">Visit your nearest Symphony Limited branch to enroll, pay fees, collect certificates, or get assistance.</p>
+    </div>
+</div>
+
+<!-- STATUS STRIP -->
+<div style="background:var(--bg-card);border-bottom:1px solid var(--border-light);padding:16px 0;">
+    <div class="container" style="display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:8px;font-size:.875rem;">
+            <span style="width:10px;height:10px;border-radius:50%;background:var(--success);display:inline-block;box-shadow:0 0 8px var(--success);"></span>
+            <span>All @ViewBag.BranchCount Branches Currently Open</span>
+        </div>
+        <div style="font-size:.875rem;color:var(--text-muted);"><i class="bi bi-clock" style="color:var(--gold);margin-right:6px;"></i>Mon – Sat: 9:00 AM – 6:00 PM</div>
+        <div style="font-size:.875rem;color:var(--text-muted);"><i class="bi bi-x-circle" style="color:var(--danger);margin-right:6px;"></i>Closed on Sundays &amp; Public Holidays</div>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        <div class="grid-3">
+            @foreach (var branch in (List<Branch>)ViewBag.Branches)
+            {
+                <div class="branch-card">
+                    <div style="display:flex;align-items:center;gap:14px;">
+                        <div class="branch-icon"><i class="bi bi-building"></i></div>
+                        <div><h4 style="margin-bottom:4px;">@branch.BranchName</h4><span class="badge @(branch.BranchStatus == "open" ? "badge-green" : "badge-blue")">@(branch.BranchStatus == "open" ? "Open" : branch.BranchStatus)</span></div>
+                    </div>
+                    <div class="branch-info">
+                        <p><i class="bi bi-geo-alt-fill"></i>@branch.Address</p>
+                        <p><i class="bi bi-telephone-fill"></i>@branch.BranchContact</p>
+                        <p><i class="bi bi-envelope-fill"></i>@branch.BranchEmail</p>
+                        <p><i class="bi bi-clock-fill"></i>Mon–Sat: 9 AM – 6 PM</p>
+                        <p><i class="bi bi-people-fill"></i>@branch.Students.Count Students Enrolled</p>
+                    </div>
+                    <a href="https://maps.google.com/?q=@Uri.EscapeDataString(branch.Address ?? branch.BranchCity)" target="_blank" class="btn btn-outline btn-sm">
+                        <i class="bi bi-map"></i> View on Google Maps
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+<script>
+
+<!-- MAP PLACEHOLDER -->
+<section class="section-sm" style="background:var(--bg-card);border-top:1px solid var(--border-light);">
+    <div class="container">
+        <div class="text-center" style="margin-bottom:36px;">
+            <div class="section-tag" style="margin:0 auto 16px;"><i class="bi bi-map"></i> Find Us</div>
+            <h2 class="section-title">Visit <span>Symphony Limited</span></h2>
+            <p style="max-width:500px;margin:0 auto;">Click on any branch's "View on Google Maps" button to get turn-by-turn directions.</p>
+        </div>
+        <div style="background:var(--bg-card2);border:1px solid var(--border-light);border-radius:var(--radius-xl);padding:60px;text-align:center;position:relative;overflow:hidden;">
+            <div style="position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(212,175,55,.05) 0%,transparent 70%);pointer-events:none;"></div>
+            <i class="bi bi-map" style="font-size:4rem;color:var(--gold);opacity:.3;display:block;margin-bottom:20px;"></i>
+            <h4 style="margin-bottom:8px;">Karachi, Pakistan</h4>
+            <p style="max-width:400px;margin:0 auto 24px;">All branches are located in major areas of Karachi. Select a branch above to open Google Maps directions.</p>
+            <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                @foreach (var branch in (List<Branch>)ViewBag.Branches)
+                {
+                    <a href="https://maps.google.com/?q=@Uri.EscapeDataString(branch.Address ?? branch.BranchCity)" target="_blank" class="btn btn-outline btn-sm"><i class="bi bi-geo-alt"></i> @branch.BranchName</a>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- BRANCH SERVICES -->
+<section class="section">
+    <div class="container">
+        <div class="text-center" style="margin-bottom:40px;">
+            <div class="section-tag" style="margin:0 auto 16px;"><i class="bi bi-gear"></i> Branch Services</div>
+            <h2 class="section-title">What You Can Do <span>At a Branch</span></h2>
+        </div>
+        <div class="grid-4">
+            <div style="text-align:center;padding:24px 16px;">
+                <div style="width:56px;height:56px;border-radius:50%;background:var(--gold-dim);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto 16px;color:var(--gold);"><i class="bi bi-cash-coin"></i></div>
+                <h5 style="margin-bottom:6px;">Pay Fees</h5>
+                <p style="font-size:.83rem;">Pay entrance, course, or lab fees via Cash, Cheque, or Draft.</p>
+            </div>
+            <div style="text-align:center;padding:24px 16px;">
+                <div style="width:56px;height:56px;border-radius:50%;background:rgba(46,204,143,.1);border:1px solid rgba(46,204,143,.2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto 16px;color:var(--success);"><i class="bi bi-person-plus"></i></div>
+                <h5 style="margin-bottom:6px;">Enroll</h5>
+                <p style="font-size:.83rem;">Complete your enrollment process after passing the entrance exam.</p>
+            </div>
+            <div style="text-align:center;padding:24px 16px;">
+                <div style="width:56px;height:56px;border-radius:50%;background:rgba(78,170,255,.1);border:1px solid rgba(78,170,255,.2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto 16px;color:var(--info);"><i class="bi bi-award"></i></div>
+                <h5 style="margin-bottom:6px;">Collect Certificate</h5>
+                <p style="font-size:.83rem;">Pick up your course completion certificate after results are declared.</p>
+            </div>
+            <div style="text-align:center;padding:24px 16px;">
+                <div style="width:56px;height:56px;border-radius:50%;background:rgba(224,92,92,.1);border:1px solid rgba(224,92,92,.2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto 16px;color:var(--danger);"><i class="bi bi-headset"></i></div>
+                <h5 style="margin-bottom:6px;">Get Support</h5>
+                <p style="font-size:.83rem;">Speak to staff for course guidance, schedule info, or transfer requests.</p>
+            </div>
+        </div>
+    </div>
+</section>

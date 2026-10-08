@@ -1,0 +1,187 @@
+@model AdminDashbord.Models.User
+@{
+    ViewData["Title"] = "Admin Profile";
+    var adminName = Context.Session.GetString("AdminName") ?? "Admin";
+    var initial = adminName.Trim().Length > 0 ? adminName.Trim().Substring(0, 1).ToUpper() : "A";
+}
+
+<main class="dash-content">
+    <div class="page-intro">
+        <div>
+            <h3>Admin <span>Profile</span></h3>
+            <p>Manage your account details, profile photo, and password.</p>
+        </div>
+    </div>
+
+    @if (Model == null)
+    {
+        <div class="note-box">
+            <i class="bi bi-exclamation-circle"></i>
+            Could not load admin profile. Please try logging out and back in.
+        </div>
+    }
+    else
+    {
+        <!-- Profile Hero Card -->
+        <div class="profile-hero-card">
+            <div class="profile-hero-bg"></div>
+            <div class="profile-hero-content">
+                <div class="profile-hero-avatar">@initial</div>
+                <div class="profile-hero-info">
+                    <h3>@Model.FullName</h3>
+                    <span class="badge badge-gold"><i class="bi bi-shield-check"></i> Administrator</span>
+                    <div class="profile-hero-meta">
+                        <span><i class="bi bi-envelope"></i> @Model.Email</span>
+                        @if (!string.IsNullOrEmpty(Model.Phone))
+                        {
+                            <span><i class="bi bi-telephone"></i> @Model.Phone</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+
+            <!-- Update Profile -->
+            <div class="card card-body">
+                <div class="profile-section-head">
+                    <i class="bi bi-person-gear"></i>
+                    <div>
+                        <h4>Update Profile</h4>
+                        <p>Change your name, email, phone or photo.</p>
+                    </div>
+                </div>
+                <form id="profile-form" enctype="multipart/form-data">
+                    <input type="hidden" name="UserId" value="@Model.UserId" />
+                    <div class="form-group ">
+                        <label class="form-label">Full Name</label>
+                        <div class="form-control-icon">
+                            <i class="bi bi-person"></i>
+                            <input type="text" class="form-control" name="FullName" value="@Model.FullName" required />
+                        </div>
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Email Address</label>
+                        <div class="form-control-icon">
+                            <i class="bi bi-envelope"></i>
+                            <input type="email" class="form-control" name="Email" value="@Model.Email" required />
+                        </div>
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Phone Number</label>
+                        <div class="form-control-icon">
+                            <i class="bi bi-telephone"></i>
+                            <input type="tel" class="form-control" name="Phone" value="@Model.Phone" placeholder="03XX-XXXXXXX" />
+                        </div>
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Profile Image <span class="table-cell-sub">(leave empty to keep current)</span></label>
+                        <input type="file" class="form-control" name="ProfileImageFile" accept="image/*" />
+                    </div>
+                    <button type="submit" class="btn btn-gold btn-full mt-2">
+                        <i class="bi bi-check-lg"></i> Save Changes
+                    </button>
+                </form>
+            </div>
+
+            <!-- Change Password -->
+            <div class="card card-body">
+                <div class="profile-section-head">
+                    <i class="bi bi-key"></i>
+                    <div>
+                        <h4>Change Password</h4>
+                        <p>Keep your account secure by updating your password.</p>
+                    </div>
+                </div>
+                <form id="password-form">
+                    <input type="hidden" name="UserId" value="@Model.UserId" />
+                    <div class="form-group ">
+                        <label class="form-label">Current Password</label>
+                        <div class="form-control-icon">
+                            <i class="bi bi-lock"></i>
+                            <input type="password" class="form-control" name="CurrentPassword" placeholder="Enter your current password" required />
+                        </div>
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">New Password</label>
+                        <div class="form-control-icon">
+                            <i class="bi bi-lock-fill"></i>
+                            <input type="password" class="form-control" name="NewPassword" id="new-password" placeholder="Enter new password" required />
+                        </div>
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Confirm New Password</label>
+                        <div class="form-control-icon">
+                            <i class="bi bi-shield-lock"></i>
+                            <input type="password" class="form-control" name="ConfirmNewPassword" id="confirm-password" placeholder="Re-enter new password" required />
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-outline btn-full mt-2">
+                        <i class="bi bi-key"></i> Update Password
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    }
+
+</main>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            // ---------- Update Profile ----------
+            $('#profile-form').on('submit', function (e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                $.ajax({
+                    url: '@Url.Action("UpdateProfile", "AdminProfile")',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Updated!', 'Profile updated successfully.', 'success')
+                                .then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                });
+            });
+
+            // ---------- Change Password ----------
+            $('#password-form').on('submit', function (e) {
+                e.preventDefault();
+
+                var newPass = $('#new-password').val();
+                var confirmPass = $('#confirm-password').val();
+
+                if (newPass !== confirmPass) {
+                    Swal.fire('Mismatch', 'New password and confirmation do not match.', 'warning');
+                    return;
+                }
+
+                $.ajax({
+                    url: '@Url.Action("ChangePassword", "AdminProfile")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Done!', 'Password changed successfully.', 'success');
+                            $('#password-form')[0].reset();
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                });
+            });
+
+        });
+    </script>
+}

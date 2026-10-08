@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace AdminDashbord.Models;
+
+public partial class EntranceMcq
+{
+    public int McqId { get; set; }
+
+    public int EntranceExamId { get; set; }
+
+    public int? TopicId { get; set; }
+
+    public string QuestionText { get; set; } = null!;
+
+    public string OptionA { get; set; } = null!;
+
+    public string OptionB { get; set; } = null!;
+
+    public string OptionC { get; set; } = null!;
+
+    public string OptionD { get; set; } = null!;
+
+    public string CorrectOption { get; set; } = null!;
+
+    public int Mcqmarks { get; set; }
+
+    public virtual EntranceExam EntranceExam { get; set; } = null!;
+
+    public virtual ICollection<StudentMcqanswer> StudentMcqanswers { get; set; } = new List<StudentMcqanswer>();
+
+    public virtual CourseTopic? Topic { get; set; }
+}

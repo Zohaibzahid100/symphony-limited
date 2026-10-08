@@ -1,0 +1,225 @@
+@model List<AdminDashbord.Models.TrackAssignmentRule>
+@{
+    var courses = (List<AdminDashbord.Models.Course>)ViewBag.Courses;
+    var tracks = (List<AdminDashbord.Models.CourseTrack>)ViewBag.Tracks;
+}
+<main class="dash-content">
+    <div class="page-intro">
+        <div>
+            <h3>Track Assignment <span>Rules</span></h3>
+            <p>Define entrance exam percentage ranges that decide whether a student is placed in the Basic or Advanced track.</p>
+        </div>
+    </div>
+    <div class="note-box">
+        <i class="bi bi-info-circle"></i>
+        Percentage ranges must not overlap for the same course. Example: 0–49% = Basic, 50–100% = Advanced.
+    </div>
+    <div class="table-wrapper">
+        <div class="table-toolbar">
+            <h4><i class="bi bi-sliders"></i> All Track Assignment Rules</h4>
+            <div class="toolbar-actions">
+                <div class="search-box"><i class="bi bi-search"></i><input type="text" data-table-search="rulesTable" placeholder="Search..." /></div>
+                <a href="#add-rulesTable" class="btn btn-gold btn-sm"><i class="bi bi-plus-lg"></i> Add New</a>
+            </div>
+        </div>
+        <table id="rulesTable">
+            <thead><tr><th>#</th><th>Course</th><th>Min %</th><th>Max %</th><th>Assigned Track</th><th>Actions</th></tr></thead>
+            <tbody>
+                @{ int i = 0; }
+                @foreach (var r in Model)
+                {
+                    i++;
+                    var badgeClass = (r.AssignedTrack?.TrackName ?? "").Contains("Advanced") ? "badge-blue" : "badge-gold";
+                    <tr>
+                        <td>@i</td>
+                        <td>@r.Course?.CourseName</td>
+                        <td>@r.MinPercentage%</td>
+                        <td>@r.MaxPercentage%</td>
+                        <td><span class="badge @badgeClass">@r.AssignedTrack?.Course?.CourseName — @r.AssignedTrack?.TrackName</span></td>
+                        <td>
+                            <div class="row-actions">
+                                <a href="#edit-rulesTable" class="icon-btn js-edit-rule" title="Edit"
+                                   data-id="@r.RuleId" data-courseid="@r.CourseId" data-min="@r.MinPercentage"
+                                   data-max="@r.MaxPercentage" data-trackid="@r.AssignedTrackId">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="#" class="icon-btn danger js-delete-rule" title="Delete" data-id="@r.RuleId">
+                                    <i class="bi bi-trash3"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="table-footer"><span>Showing @Model.Count of @Model.Count entries</span></div>
+    </div>
+
+    <div class="css-modal" id="add-rulesTable">
+        <div class="css-modal-box">
+            <form id="add-rule-form">
+                <div class="css-modal-header">
+                    <h4><i class="bi bi-plus-circle"></i> Add New Rule</h4>
+                    <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                </div>
+                <div class="css-modal-body">
+                    <div class="form-group ">
+                        <label class="form-label">Course</label>
+                        <select class="form-control" name="CourseId" required>
+                            <option value="">-- Select Course --</option>
+                            @foreach (var c in courses)
+                            {
+                                <option value="@c.CourseId">@c.CourseName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Minimum Percentage (%)</label>
+                        <input type="number" step="0.01" class="form-control" name="MinPercentage" placeholder="e.g. 0" required />
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Maximum Percentage (%)</label>
+                        <input type="number" step="0.01" class="form-control" name="MaxPercentage" placeholder="e.g. 49" required />
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Assigned Track</label>
+                        <select class="form-control" name="AssignedTrackId" required>
+                            <option value="">-- Select Track --</option>
+                            @foreach (var t in tracks)
+                            {
+                                <option value="@t.TrackId">@t.Course?.CourseName — @t.TrackName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="css-modal-footer">
+                    <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                    <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Save Rule</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="css-modal" id="edit-rulesTable">
+        <div class="css-modal-box">
+            <form id="edit-rule-form">
+                <input type="hidden" name="RuleId" id="edit-rule-id" />
+                <div class="css-modal-header">
+                    <h4><i class="bi bi-pencil-square"></i> Edit Rule</h4>
+                    <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                </div>
+                <div class="css-modal-body">
+                    <div class="form-group ">
+                        <label class="form-label">Course</label>
+                        <select class="form-control" name="CourseId" id="edit-rule-courseid" required>
+                            @foreach (var c in courses)
+                            {
+                                <option value="@c.CourseId">@c.CourseName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Minimum Percentage (%)</label>
+                        <input type="number" step="0.01" class="form-control" name="MinPercentage" id="edit-rule-min" required />
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Maximum Percentage (%)</label>
+                        <input type="number" step="0.01" class="form-control" name="MaxPercentage" id="edit-rule-max" required />
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Assigned Track</label>
+                        <select class="form-control" name="AssignedTrackId" id="edit-rule-trackid" required>
+                            @foreach (var t in tracks)
+                            {
+                                <option value="@t.TrackId">@t.Course?.CourseName — @t.TrackName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="css-modal-footer">
+                    <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                    <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Update Rule</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</main>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            $('.js-edit-rule').on('click', function () {
+                $('#edit-rule-id').val($(this).data('id'));
+                $('#edit-rule-courseid').val($(this).data('courseid'));
+                $('#edit-rule-min').val($(this).data('min'));
+                $('#edit-rule-max').val($(this).data('max'));
+                $('#edit-rule-trackid').val($(this).data('trackid'));
+            });
+
+            $('#add-rule-form').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("Save", "TrackRules")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Saved!', 'Rule added successfully.', 'success').then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                });
+            });
+
+            $('#edit-rule-form').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("Save", "TrackRules")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Updated!', 'Rule updated successfully.', 'success').then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                });
+            });
+
+            $('.js-delete-rule').on('click', function (e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Delete this rule? This cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel'
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '@Url.Action("Delete", "TrackRules")/' + id,
+                            type: 'POST',
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire('Deleted!', 'Rule has been deleted.', 'success').then(function () { location.reload(); });
+                                } else {
+                                    Swal.fire('Error', response.message, 'error');
+                                }
+                            },
+                            error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
+}

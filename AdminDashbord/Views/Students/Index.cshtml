@@ -1,0 +1,259 @@
+@model List<AdminDashbord.Models.Student>
+@{
+    var users = (List<AdminDashbord.Models.User>)ViewBag.Users;
+    var branches = (List<AdminDashbord.Models.Branch>)ViewBag.Branches;
+}
+
+<main class="dash-content">
+    <div class="page-intro">
+        <div>
+            <h3>Manage <span>Students</span></h3>
+            <p>Student profiles linked to user accounts, with roll numbers and branch assignment.</p>
+        </div>
+    </div>
+    <div class="table-wrapper">
+        <div class="table-toolbar">
+            <h4><i class="bi bi-person-badge"></i> All Students</h4>
+            <div class="toolbar-actions">
+                <div class="search-box"><i class="bi bi-search"></i><input type="text" data-table-search="studentsTable" placeholder="Search..." /></div>
+                <a href="#add-studentsTable" class="btn btn-gold btn-sm"><i class="bi bi-plus-lg"></i> Add New</a>
+            </div>
+        </div>
+        <table id="studentsTable">
+            <thead><tr><th>#</th><th>Roll Number</th><th>Student</th><th>Branch</th><th>Registration Date</th><th>Actions</th></tr></thead>
+            <tbody>
+                @{ int i = 0; }
+                @foreach (var s in Model)
+                {
+                    i++;
+                    var initial = (s.User?.FullName ?? "?").Trim();
+                    initial = initial.Length > 0 ? initial.Substring(0, 1).ToUpper() : "?";
+                    <tr>
+                        <td>@i</td>
+                        <td><span class="badge badge-gold">@s.RollNumber</span></td>
+                        <td>
+                            <div class="table-cell-main">
+                                <div class="table-avatar">@initial</div>
+                                <div>
+                                    <strong>@s.User?.FullName</strong><br />
+                                    <span class="table-cell-sub">@s.User?.Email</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>@(s.Branch?.BranchName ?? "—")</td>
+                        <td>@(s.RegistrationDate?.ToString("dd MMM yyyy") ?? "—")</td>
+                        <td>
+                            <div class="row-actions">
+                                <a href="#edit-studentsTable" class="icon-btn js-edit-student" title="Edit"
+                                   data-id="@s.StudentId" data-userid="@s.UserId" data-branchid="@s.BranchId"
+                                   data-roll="@s.RollNumber" data-regdate="@s.RegistrationDate?.ToString("yyyy-MM-dd")">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="#" class="icon-btn danger js-delete-student" title="Delete" data-id="@s.StudentId" data-name="@s.RollNumber">
+                                    <i class="bi bi-trash3"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="table-footer">
+            <span>Showing @Model.Count of @Model.Count entries</span>
+        </div>
+    </div>
+
+    <div class="css-modal" id="add-studentsTable">
+        <div class="css-modal-box">
+            <form id="add-student-form">
+                <div class="css-modal-header">
+                    <h4><i class="bi bi-person-plus"></i> Add New Student</h4>
+                    <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                </div>
+                <div class="css-modal-body">
+                    <div class="form-group ">
+                        <label class="form-label">User Account</label>
+                        <select class="form-control" name="UserId" required>
+                            <option value="">-- Select User --</option>
+                            @foreach (var u in users)
+                            {
+                                <option value="@u.UserId">@u.FullName (@u.Email)</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Branch</label>
+                        <select class="form-control" name="BranchId">
+                            <option value="">-- Select Branch --</option>
+                            @foreach (var b in branches)
+                            {
+                                <option value="@b.BranchId">@b.BranchName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="modal-grid-2">
+                        <div class="form-group ">
+                            <label class="form-label">Roll Number</label>
+                            <input type="text" class="form-control" name="RollNumber" placeholder="e.g. SL-2025-0042" required />
+                        </div>
+
+                        <div class="form-group ">
+                            <label class="form-label">Registration Date</label>
+                            <input type="date" class="form-control" name="RegistrationDate" />
+                        </div>
+                    </div>
+                </div>
+                <div class="css-modal-footer">
+                    <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                    <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Save Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="css-modal" id="edit-studentsTable">
+        <div class="css-modal-box">
+            <form id="edit-student-form">
+                <input type="hidden" name="StudentId" id="edit-student-id" />
+                <div class="css-modal-header">
+                    <h4><i class="bi bi-pencil-square"></i> Edit Student</h4>
+                    <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                </div>
+                <div class="css-modal-body">
+                    <div class="form-group ">
+                        <label class="form-label">User Account</label>
+                        <select class="form-control" name="UserId" id="edit-student-userid" required>
+                            @foreach (var u in users)
+                            {
+                                <option value="@u.UserId">@u.FullName (@u.Email)</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Branch</label>
+                        <select class="form-control" name="BranchId" id="edit-student-branchid">
+                            <option value="">-- Select Branch --</option>
+                            @foreach (var b in branches)
+                            {
+                                <option value="@b.BranchId">@b.BranchName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="modal-grid-2">
+                        <div class="form-group ">
+                            <label class="form-label">Roll Number</label>
+                            <input type="text" class="form-control" name="RollNumber" id="edit-student-roll" placeholder="e.g. SL-2025-0042" required />
+                        </div>
+
+                        <div class="form-group ">
+                            <label class="form-label">Registration Date</label>
+                            <input type="date" class="form-control" name="RegistrationDate" id="edit-student-regdate" />
+                        </div>
+                    </div>
+                </div>
+                <div class="css-modal-footer">
+                    <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                    <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Update Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</main>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            // ---------- Fill the Edit form when pencil icon is clicked ----------
+            $('.js-edit-student').on('click', function () {
+                $('#edit-student-id').val($(this).data('id'));
+                $('#edit-student-userid').val($(this).data('userid'));
+                $('#edit-student-branchid').val($(this).data('branchid') || '');
+                $('#edit-student-roll').val($(this).data('roll'));
+                $('#edit-student-regdate').val($(this).data('regdate') || '');
+            });
+
+            // ---------- Add Student (AJAX) ----------
+            $('#add-student-form').on('submit', function (e) {
+                e.preventDefault();
+                var formData = $(this).serialize();
+
+                $.ajax({
+                    url: '@Url.Action("Save", "Students")',
+                    type: 'POST',
+                    data: formData,
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Saved!', 'Student added successfully.', 'success')
+                                .then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
+                    }
+                });
+            });
+
+            // ---------- Edit Student (AJAX) ----------
+            $('#edit-student-form').on('submit', function (e) {
+                e.preventDefault();
+                var formData = $(this).serialize();
+
+                $.ajax({
+                    url: '@Url.Action("Save", "Students")',
+                    type: 'POST',
+                    data: formData,
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Updated!', 'Student updated successfully.', 'success')
+                                .then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
+                    }
+                });
+            });
+
+            // ---------- Delete Student (AJAX) ----------
+            $('.js-delete-student').on('click', function (e) {
+                e.preventDefault();
+                var studentId = $(this).data('id');
+                var studentName = $(this).data('name');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Delete student "' + studentName + '"? This cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel'
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '@Url.Action("Delete", "Students")/' + studentId,
+                            type: 'POST',
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire('Deleted!', 'Student has been deleted.', 'success')
+                                        .then(function () { location.reload(); });
+                                } else {
+                                    Swal.fire('Error', response.message, 'error');
+                                }
+                            },
+                            error: function () {
+                                Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
+                            }
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
+}

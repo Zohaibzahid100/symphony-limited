@@ -1,0 +1,36 @@
+﻿@{
+    var studentName = ViewData["StudentName"]?.ToString() ?? "Ahmed Raza";
+    var studentRoll = ViewData["StudentRoll"]?.ToString() ?? "SL-2025-0042";
+    var studentInitial = studentName.Length > 0 ? studentName[0].ToString().ToUpper() : "A";
+
+    var ctrl = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+
+    string Active(string c, string a = "Index")
+        => (ctrl == c && action == a) ? "active" : string.Empty;
+}
+
+<aside class="sidebar">
+    <div class="sidebar-user">
+        <div class="sidebar-avatar">@studentInitial</div>
+        <div class="sidebar-user-info">
+            <div class="sidebar-name">@studentName</div>
+            <div class="sidebar-roll">@studentRoll</div>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="sidebar-section-label">Main</div>
+        <a asp-controller="Dashboard" asp-action="Dashboard" class="sidebar-link @Active("Dashboard", "Index")">       <i class="bi bi-grid-1x2"></i> Overview</a>
+        <a asp-controller="Dashboard" asp-action="Enrollment" class="sidebar-link @Active("Dashboard", "Enrollments")"> <i class="bi bi-book"></i> My Enrollments</a>
+        <a asp-controller="Dashboard" asp-action="Result" class="sidebar-link @Active("Dashboard", "Results")">     <i class="bi bi-bar-chart"></i> Results</a>
+        <a asp-controller="Dashboard" asp-action="Labsec" class="sidebar-link @Active("Dashboard", "Lab")">         <i class="bi bi-laptop"></i> Lab Sessions</a>
+        <a asp-controller="Dashboard" asp-action="Payment" class="sidebar-link @Active("Dashboard", "Payments")">    <i class="bi bi-wallet2"></i> Payments</a>
+
+        <div class="sidebar-section-label" style="margin-top:20px;">Account</div>
+        <a asp-controller="Dashboard" asp-action="Profile" class="sidebar-link @Active("Dashboard", "Profile")">     <i class="bi bi-person-circle"></i> My Profile</a>
+        <a asp-controller="EntranceExam" asp-action="enExam" class="sidebar-link @Active("EntranceExam", "enExam")">             <i class="bi bi-pencil-square"></i> Entrance Exams</a>
+        <a asp-controller="FinalExam" asp-action="Index" class="sidebar-link @Active("FinalExam", "Index")">             <i class="bi bi-mortarboard"></i> Final Exams</a>
+        <a asp-controller="Course" asp-action="course" class="sidebar-link @Active("Course", "course")">          <i class="bi bi-collection"></i> Browse Courses</a>
+        <a asp-controller="signin" asp-action="logout" class="sidebar-link" style="color:var(--danger);margin-top:12px;"> <i class="bi bi-box-arrow-right"></i> Logout</a>
+    </nav>
+</aside>

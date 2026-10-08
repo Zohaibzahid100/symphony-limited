@@ -1,0 +1,365 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<!-- ══════════════ HERO ══════════════ -->
+<section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-badge"><i class="bi bi-stars"></i> Pakistan's Premier IT Institute</div>
+            <h1>Build Your <em>Tech Career</em> With Us</h1>
+            <p class="hero-desc">Symphony Limited offers structured IT courses with entrance-based admission, ensuring every student gets the right track — Basic or Advanced — matched to their skills.</p>
+            <div class="hero-actions">
+                <a asp-action="course" asp-controller="Course" class="btn btn-gold btn-lg">Explore Courses <i class="bi bi-arrow-right"></i></a>
+                <a asp-action="enExam" asp-controller="EntranceExam" class="btn btn-outline btn-lg"><i class="bi bi-pencil-square"></i> Apply for Exam</a>
+            </div>
+            <div class="hero-stats">
+                <div>
+                    <div class="hero-stat-num"><span data-counter="@ViewBag.StudentCount" data-suffix="+">0</span></div>
+                    <div class="hero-stat-label">Students Enrolled</div>
+                </div>
+                <div>
+                    <div class="hero-stat-num"><span data-counter="@ViewBag.BranchCount" data-suffix="">0</span></div>
+                    <div class="hero-stat-label">Active Branches</div>
+                </div>
+                <div>
+                    <div class="hero-stat-num"><span data-counter="@ViewBag.CourseCount" data-suffix="+">0</span></div>
+                    <div class="hero-stat-label">Courses Offered</div>
+                </div>
+                <div>
+                    <div class="hero-stat-num"><span data-counter="@ViewBag.PassRate" data-suffix="%">0</span></div>
+                    <div class="hero-stat-label">Pass Rate</div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="hero-float-card">
+                <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+                    <div style="width:48px;height:48px;border-radius:12px;background:var(--gold-dim);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🎓</div>
+                    <div>
+                        <div style="font-weight:600;font-size:.95rem;">Entrance Exam System</div>
+                        <div style="font-size:.78rem;color:var(--text-muted);">Automated track assignment</div>
+                    </div>
+                </div>
+                <div style="margin-bottom:14px;">
+                    <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--text-muted);margin-bottom:6px;">
+                        <span>Basic Track (0–49%)</span><span style="color:var(--info);">DISM</span>
+                    </div>
+                    <div class="progress-bar"><div class="progress-fill" style="width:45%;background:var(--info);"></div></div>
+                </div>
+                <div style="margin-bottom:20px;">
+                    <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--text-muted);margin-bottom:6px;">
+                        <span>Advanced Track (50–100%)</span><span style="color:var(--gold);">CPISM</span>
+                    </div>
+                    <div class="progress-bar"><div class="progress-fill" style="width:72%;"></div></div>
+                </div>
+                <div style="background:var(--gold-dim);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;font-size:.82rem;color:var(--text-secondary);text-align:center;">
+                    <i class="bi bi-lightning-fill" style="color:var(--gold);"></i> Score determines your track — fair &amp; automated
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ANNOUNCEMENT STRIP -->
+<div class="announcement">
+    <div class="marquee-track">
+        <span class="marquee-item"><i class="bi bi-megaphone-fill"></i> New Batch Starting July 2025 — Apply Now</span>
+        <span class="marquee-item"><i class="bi bi-star-fill"></i> Web Development · Database · Graphic Designing · Networking</span>
+        <span class="marquee-item"><i class="bi bi-building-fill"></i> 3 Branches: Gulshan · Saddar · North Nazimabad</span>
+        <span class="marquee-item"><i class="bi bi-shield-check-fill"></i> Certified Courses · Professional Instructors</span>
+        <span class="marquee-item"><i class="bi bi-megaphone-fill"></i> New Batch Starting July 2025 — Apply Now</span>
+        <span class="marquee-item"><i class="bi bi-star-fill"></i> Web Development · Database · Graphic Designing · Networking</span>
+        <span class="marquee-item"><i class="bi bi-building-fill"></i> 3 Branches: Gulshan · Saddar · North Nazimabad</span>
+        <span class="marquee-item"><i class="bi bi-shield-check-fill"></i> Certified Courses · Professional Instructors</span>
+    </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="section" style="background:var(--bg-card);border-top:1px solid var(--border-light);border-bottom:1px solid var(--border-light);">
+    <div class="container text-center">
+        <div class="section-tag" style="margin:0 auto 20px;"><i class="bi bi-diagram-3"></i> How It Works</div>
+        <h2 class="section-title">Simple <span>4-Step</span> Journey</h2>
+        <p class="section-subtitle">From registration to certification — a clear structured path.</p>
+        <div class="steps-grid" style="margin-top:48px;">
+            <div class="step-item @(ViewBag.IsRegistered ? "active" : "")">
+                <div class="step-num"><i class="bi bi-person-plus" style="font-size:1.2rem;"></i></div>
+                <h5>Register</h5>
+                <p style="font-size:.85rem;">Create your student account and select your desired course program.</p>
+            </div>
+            <div class="step-item @(ViewBag.HasApplied ? "active" : "")">
+                <div class="step-num"><i class="bi bi-pencil-square" style="font-size:1.2rem;"></i></div>
+                <h5>Entrance Exam</h5>
+                <p style="font-size:.85rem;">Pay the entrance fee and appear in the MCQ-based admission test.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-num"><i class="bi bi-graph-up" style="font-size:1.2rem;"></i></div>
+                <h5>Track Assigned</h5>
+                <p style="font-size:.85rem;">Your score automatically places you in Basic or Advanced track.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-num"><i class="bi bi-award" style="font-size:1.2rem;"></i></div>
+                <h5>Get Certified</h5>
+                <p style="font-size:.85rem;">Complete your course, pass the final exam, receive your certificate.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURED COURSES -->
+<section class="section">
+    <div class="container">
+        <div class="text-center">
+            <div class="section-tag" style="margin:0 auto 20px;"><i class="bi bi-collection"></i> Our Programs</div>
+            <h2 class="section-title">Featured <span>Courses</span></h2>
+            <p class="section-subtitle">Each course has two structured tracks based on your entrance exam score.</p>
+        </div>
+        <div class="grid-3" style="margin-top:8px;">
+            @{ string[] courseIcons = { "🌐", "🗄️", "🎨", "🔌" }; }
+            @foreach (var course in (List<Course>)ViewBag.FeaturedCourses)
+            {
+                var basicTrack = course.CourseTracks.OrderBy(t => t.CourseFee).FirstOrDefault();
+                var advTrack = course.CourseTracks.OrderByDescending(t => t.CourseFee).FirstOrDefault();
+                <div class="course-card card-body">
+                    <div class="course-icon">@courseIcons[course.CourseId % courseIcons.Length]</div>
+                    <h4>@course.CourseName</h4>
+                    <p style="font-size:.875rem;margin:8px 0 12px;">@course.Description</p>
+                    <div class="course-tracks">
+                        @if (basicTrack != null)
+                        {
+                            <span class="course-track-pill basic"><i class="bi bi-star"></i> Basic · @(basicTrack.DurationMonths)mo</span>
+                        }
+                        @if (advTrack != null && advTrack.TrackId != basicTrack?.TrackId)
+                        {
+                            <span class="course-track-pill advanced"><i class="bi bi-star-fill"></i> Advanced · @(advTrack.DurationMonths)mo</span>
+                        }
+                    </div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px solid var(--border-light);">
+                        <span style="font-size:.78rem;color:var(--text-muted);">Starting from</span>
+                        <span style="font-family:var(--font-display);font-size:1.05rem;color:var(--gold);">PKR @(basicTrack?.CourseFee.ToString("N0") ?? "—")</span>
+                    </div>
+                    <button onclick="showCourseModal(@course.CourseId)" class="btn btn-ghost btn-full" style="margin-top:12px;">
+                        View Details <i class="bi bi-arrow-right"></i>
+                    </button>
+                </div>
+            }
+        </div>
+        <div class="text-center" style="margin-top:40px;">
+            <a asp-action="course" asp-controller="Course" class="btn btn-outline btn-lg">View All Courses <i class="bi bi-arrow-right"></i></a>
+        </div>
+    </div>
+</section>
+
+<!-- TRACK EXPLAINER -->
+<section class="section-sm" style="background:var(--bg-card);border-top:1px solid var(--border-light);border-bottom:1px solid var(--border-light);">
+    <div class="container">
+        <div class="grid-2" style="align-items:center;gap:56px;">
+            <div>
+                <div class="section-tag"><i class="bi bi-signpost-split"></i> Track System</div>
+                <h2 class="section-title">Two Tracks, <span>One Goal</span></h2>
+                <div class="divider"></div>
+                <ul class="about-list">
+                    <li><i class="bi bi-check-circle-fill"></i><span><strong style="color:var(--text-primary);">Basic Track (DISM)</strong> — Scores 0–49%. Foundational concepts: HTML, CSS, Bootstrap, basic SQL, core design.</span></li>
+                    <li><i class="bi bi-check-circle-fill"></i><span><strong style="color:var(--text-primary);">Advanced Track (CPISM)</strong> — Scores 50–100%. Frameworks, APIs, backend development, advanced tools.</span></li>
+                    <li><i class="bi bi-check-circle-fill"></i><span>Track assignment is <strong style="color:var(--gold);">fully automated</strong> based on entrance exam percentage.</span></li>
+                    <li><i class="bi bi-check-circle-fill"></i><span>Lab sessions available <strong style="color:var(--gold);">during and after</strong> course completion.</span></li>
+                </ul>
+                <a asp-action="enExam" asp-controller="EntranceExam" class="btn btn-gold" style="margin-top:16px;">
+                    <i class="bi bi-pencil-square"></i> Take Entrance Exam
+                </a>
+            </div>
+            <div>
+                <div style="display:flex;flex-direction:column;gap:16px;">
+                    <div style="background:var(--bg-card2);border:1px solid rgba(78,170,255,.25);border-radius:var(--radius-lg);padding:24px;border-left:3px solid var(--info);">
+                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                            <div style="width:40px;height:40px;border-radius:8px;background:rgba(78,170,255,.1);display:flex;align-items:center;justify-content:center;color:var(--info);"><i class="bi bi-star"></i></div>
+                            <div><strong>Basic Track — DISM</strong><div style="font-size:.75rem;color:var(--info);">Score 0 – 49%</div></div>
+                        </div>
+                        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                            <span class="badge badge-blue">HTML5</span><span class="badge badge-blue">CSS3</span><span class="badge badge-blue">Bootstrap</span><span class="badge badge-blue">JS Basics</span><span class="badge badge-blue">jQuery</span>
+                        </div>
+                    </div>
+                    <div style="background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;border-left:3px solid var(--gold);">
+                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                            <div style="width:40px;height:40px;border-radius:8px;background:var(--gold-dim);display:flex;align-items:center;justify-content:center;color:var(--gold);"><i class="bi bi-star-fill"></i></div>
+                            <div><strong>Advanced Track — CPISM</strong><div style="font-size:.75rem;color:var(--gold);">Score 50 – 100%</div></div>
+                        </div>
+                        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                            <span class="badge badge-gold">PHP</span><span class="badge badge-gold">Laravel</span><span class="badge badge-gold">REST API</span><span class="badge badge-gold">MySQL</span><span class="badge badge-gold">Git</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- UPCOMING EXAMS -->
+<section class="section">
+    <div class="container">
+        <div class="text-center">
+            <div class="section-tag" style="margin:0 auto 20px;"><i class="bi bi-calendar-event"></i> Admission Open</div>
+            <h2 class="section-title">Upcoming <span>Entrance Exams</span></h2>
+            <p class="section-subtitle">Apply before the last date. Entrance fee is PKR 500 per exam.</p>
+        </div>
+        <div style="max-width:900px;margin:0 auto;">
+            @foreach (var exam in (List<EntranceExam>)ViewBag.UpcomingExams)
+            {
+                <div class="exam-card" style="margin-bottom:16px;">
+                    <div>
+                        <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px;">
+                            <span class="badge badge-blue">@exam.ExamStatus</span>
+                            <span class="badge badge-gold">@exam.Course?.CourseName</span>
+                        </div>
+                        <h3 style="font-size:1.05rem;margin-bottom:6px;">@exam.ExamTitle</h3>
+                        <div class="exam-meta">
+                            <span class="exam-meta-item"><i class="bi bi-calendar3"></i>Exam: @exam.ExamDate.ToString("dd MMM yyyy")</span>
+                            <span class="exam-meta-item"><i class="bi bi-hourglass-split"></i>Last Date: @(exam.LastDateToApply?.ToString("dd MMM yyyy") ?? "—")</span>
+                            <span class="exam-meta-item"><i class="bi bi-currency-dollar"></i>PKR @exam.ExamFee.ToString("N0")</span>
+                            <span class="exam-meta-item"><i class="bi bi-list-check"></i>@exam.TotalMarks MCQs</span>
+                        </div>
+                    </div>
+                    <div style="flex-shrink:0;display:flex;flex-direction:column;gap:10px;align-items:flex-end;">
+                        @if (ViewBag.IsRegistered)
+                        {
+                            <button onclick="applyExam(@exam.EntranceExamId,'@Html.Raw(exam.ExamTitle.Replace("'", "\\'"))','@exam.ExamDate.ToString("dd MMM yyyy")',@exam.ExamFee)" class="btn btn-gold">Apply Now <i class="bi bi-arrow-right"></i></button>
+                        }
+                        else
+                        {
+                            <a asp-controller="signin" asp-action="login" class="btn btn-outline" title="Register first to apply">Login to Apply</a>
+                        }
+                        <button onclick="startDemoExam()" class="btn btn-outline btn-sm"><i class="bi bi-play-circle"></i> Demo Exam</button>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="text-center" style="margin-top:28px;">
+            <a asp-action="enExam" asp-controller="EntranceExam" class="btn btn-outline">View All Exams <i class="bi bi-arrow-right"></i></a>
+        </div>
+    </div>
+</section>
+
+<!-- BRANCHES PREVIEW -->
+<section class="section-sm" style="background:var(--bg-card);border-top:1px solid var(--border-light);border-bottom:1px solid var(--border-light);">
+    <div class="container">
+        <div class="text-center">
+            <div class="section-tag" style="margin:0 auto 20px;"><i class="bi bi-geo-alt"></i> Locations</div>
+            <h2 class="section-title">Our <span>Branches</span></h2>
+            <p class="section-subtitle">Conveniently located across Karachi. Find a branch near you.</p>
+        </div>
+        <div class="grid-3">
+            @foreach (var branch in (List<Branch>)ViewBag.Branches)
+            {
+                <div class="branch-card">
+                    <div class="branch-icon"><i class="bi bi-building"></i></div>
+                    <div><h4 style="margin-bottom:4px;">@branch.BranchName</h4><span class="badge @(branch.BranchStatus == "open" ? "badge-green" : "badge-blue")">@(branch.BranchStatus == "open" ? "Open" : branch.BranchStatus)</span></div>
+                    <div class="branch-info">
+                        <p><i class="bi bi-geo-alt"></i>@branch.Address</p>
+                        <p><i class="bi bi-telephone"></i>@branch.BranchContact</p>
+                        <p><i class="bi bi-envelope"></i>@branch.BranchEmail</p>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="text-center" style="margin-top:32px;">
+            <a asp-action="branches" asp-controller="Branches" class="btn btn-outline">All Branches <i class="bi bi-arrow-right"></i></a>
+        </div>
+    </div>
+</section>
+
+<!-- WHY US -->
+<section class="section">
+    <div class="container">
+        <div class="text-center">
+            <div class="section-tag" style="margin:0 auto 20px;"><i class="bi bi-trophy"></i> Why Symphony</div>
+            <h2 class="section-title">What Sets Us <span>Apart</span></h2>
+        </div>
+        <div class="grid-4" style="margin-top:48px;">
+            <div style="text-align:center;padding:28px 16px;">
+                <div style="width:64px;height:64px;border-radius:50%;background:var(--gold-dim);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 18px;color:var(--gold);"><i class="bi bi-robot"></i></div>
+                <h5 style="margin-bottom:8px;">Auto Track System</h5>
+                <p style="font-size:.85rem;">Entrance score automatically assigns you to the right learning level.</p>
+            </div>
+            <div style="text-align:center;padding:28px 16px;">
+                <div style="width:64px;height:64px;border-radius:50%;background:rgba(46,204,143,.1);border:1px solid rgba(46,204,143,.2);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 18px;color:var(--success);"><i class="bi bi-laptop"></i></div>
+                <h5 style="margin-bottom:8px;">Lab Facility</h5>
+                <p style="font-size:.85rem;">Hands-on lab sessions during and after course for maximum practice.</p>
+            </div>
+            <div style="text-align:center;padding:28px 16px;">
+                <div style="width:64px;height:64px;border-radius:50%;background:rgba(78,170,255,.1);border:1px solid rgba(78,170,255,.2);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 18px;color:var(--info);"><i class="bi bi-award"></i></div>
+                <h5 style="margin-bottom:8px;">Certified Programs</h5>
+                <p style="font-size:.85rem;">Get a recognized certificate after passing the final certification exam.</p>
+            </div>
+            <div style="text-align:center;padding:28px 16px;">
+                <div style="width:64px;height:64px;border-radius:50%;background:rgba(224,92,92,.1);border:1px solid rgba(224,92,92,.2);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 18px;color:var(--danger);"><i class="bi bi-people"></i></div>
+                <h5 style="margin-bottom:8px;">Expert Faculty</h5>
+                <p style="font-size:.85rem;">Learn from experienced industry professionals with real-world expertise.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="section-sm" style="background:var(--bg-card);border-top:1px solid var(--border-light);">
+    <div class="container">
+        <div class="grid-2" style="gap:64px;align-items:start;">
+            <div>
+                <div class="section-tag"><i class="bi bi-question-circle"></i> FAQs</div>
+                <h2 class="section-title">Frequently Asked <span>Questions</span></h2>
+                <div class="divider"></div>
+                <p>Still have questions? Visit our Contact page or drop by your nearest branch.</p>
+                <a asp-action="Contact" asp-controller="contact" class="btn btn-outline" style="margin-top:20px;"><i class="bi bi-envelope"></i> Contact Us</a>
+            </div>
+            <div>
+                @foreach (var faq in (List<Faq>)ViewBag.Faqs)
+                {
+                    <div class="faq-item">
+                        <div class="faq-question"><span>@faq.Question</span><i class="bi bi-chevron-down"></i></div>
+                        <div class="faq-answer"><div class="faq-answer-inner">@faq.Answer</div></div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- COURSE DETAIL MODAL -->
+<div class="modal-overlay" id="courseModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h4 id="modalCourseTitle">Course Details</h4>
+            <button class="modal-close" onclick="closeModal('courseModal')"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-body" id="modalCourseBody"></div>
+    </div>
+</div>
+
+<!-- APPLY MODAL -->
+<div class="modal-overlay" id="applyModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h4 id="applyModalTitle">Apply for Exam</h4>
+            <button class="modal-close" onclick="closeModal('applyModal')"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-body" id="applyModalBody"></div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('applyModal')">Cancel</button>
+            <button class="btn btn-gold" id="confirmApplyBtn">Confirm Application <i class="bi bi-check2"></i></button>
+        </div>
+    </div>
+</div>
+
+<!-- DEMO EXAM MODAL -->
+<div class="modal-overlay" id="examModal">
+    <div class="modal-box" style="max-width:700px;">
+        <div class="modal-header">
+            <h4><i class="bi bi-pencil-square" style="color:var(--gold);margin-right:8px;"></i>Demo Entrance Exam</h4>
+            <button class="modal-close" onclick="closeModal('examModal')"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-body quiz-wrapper" id="quizContent"></div>
+    </div>
+</div>
+

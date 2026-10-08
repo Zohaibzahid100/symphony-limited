@@ -1,0 +1,234 @@
+@model List<AdminDashbord.Models.StudentEnrollment>
+@{
+    var students = (List<AdminDashbord.Models.Student>)ViewBag.Students;
+    var courses = (List<AdminDashbord.Models.Course>)ViewBag.Courses;
+    var tracks = (List<AdminDashbord.Models.CourseTrack>)ViewBag.Tracks;
+}
+
+<main class="dash-content">
+    <div class="page-intro">
+        <div>
+            <h3>Student <span>Enrollments</span></h3>
+            <p>Confirmed admissions — students who have paid their course fee and been assigned to a track.</p>
+        </div>
+    </div>
+    <div class="table-wrapper">
+        <div class="table-toolbar">
+            <h4><i class="bi bi-journal-check"></i> All Enrollments</h4>
+            <div class="toolbar-actions">
+                <div class="search-box"><i class="bi bi-search"></i><input type="text" data-table-search="enrollmentsTable" placeholder="Search..." /></div>
+                <a href="#add-enrollmentsTable" class="btn btn-gold btn-sm"><i class="bi bi-plus-lg"></i> Add New</a>
+            </div>
+        </div>
+        <table id="enrollmentsTable">
+            <thead><tr><th>#</th><th>Student</th><th>Course</th><th>Track</th><th>Enrollment Date</th><th>Actions</th></tr></thead>
+            <tbody>
+                @{ int i = 0; }
+                @foreach (var e in Model)
+                {
+                    i++;
+                    var badgeClass = (e.Track?.TrackName ?? "").Contains("Advanced") ? "badge-blue" : "badge-gold";
+                    <tr>
+                        <td>@i</td>
+                        <td>@e.Student?.RollNumber — @e.Student?.User?.FullName</td>
+                        <td>@e.Course?.CourseName</td>
+                        <td><span class="badge @badgeClass">@e.Track?.TrackName</span></td>
+                        <td>@(e.EnrollmentDate?.ToString("dd MMM yyyy") ?? "—")</td>
+                        <td>
+                            <div class="row-actions">
+                                <a href="#edit-enrollmentsTable" class="icon-btn js-edit-enr" title="Edit"
+                                   data-id="@e.EnrollmentId" data-studentid="@e.StudentId" data-courseid="@e.CourseId"
+                                   data-trackid="@e.TrackId" data-date="@e.EnrollmentDate?.ToString("yyyy-MM-dd")">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="#" class="icon-btn danger js-delete-enr" title="Delete" data-id="@e.EnrollmentId">
+                                    <i class="bi bi-trash3"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="table-footer"><span>Showing @Model.Count of @Model.Count entries</span></div>
+    </div>
+
+    <div class="css-modal" id="add-enrollmentsTable">
+        <div class="css-modal-box">
+            <form id="add-enr-form">
+                <div class="css-modal-header">
+                    <h4><i class="bi bi-plus-circle"></i> Add New Enrollment</h4>
+                    <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                </div>
+                <div class="css-modal-body">
+                    <div class="form-group ">
+                        <label class="form-label">Student</label>
+                        <select class="form-control" name="StudentId" required>
+                            <option value="">-- Select Student --</option>
+                            @foreach (var s in students)
+                            {
+                                <option value="@s.StudentId">@s.RollNumber — @s.User?.FullName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Course</label>
+                        <select class="form-control" name="CourseId" required>
+                            <option value="">-- Select Course --</option>
+                            @foreach (var c in courses)
+                            {
+                                <option value="@c.CourseId">@c.CourseName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Track</label>
+                        <select class="form-control" name="TrackId" required>
+                            <option value="">-- Select Track --</option>
+                            @foreach (var t in tracks)
+                            {
+                                <option value="@t.TrackId">@t.Course?.CourseName — @t.TrackName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Enrollment Date</label>
+                        <input type="date" class="form-control" name="EnrollmentDate" />
+                    </div>
+                </div>
+                <div class="css-modal-footer">
+                    <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                    <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Save Enrollment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="css-modal" id="edit-enrollmentsTable">
+        <div class="css-modal-box">
+            <form id="edit-enr-form">
+                <input type="hidden" name="EnrollmentId" id="edit-enr-id" />
+                <div class="css-modal-header">
+                    <h4><i class="bi bi-pencil-square"></i> Edit Enrollment</h4>
+                    <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                </div>
+                <div class="css-modal-body">
+                    <div class="form-group ">
+                        <label class="form-label">Student</label>
+                        <select class="form-control" name="StudentId" id="edit-enr-studentid" required>
+                            @foreach (var s in students)
+                            {
+                                <option value="@s.StudentId">@s.RollNumber — @s.User?.FullName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Course</label>
+                        <select class="form-control" name="CourseId" id="edit-enr-courseid" required>
+                            @foreach (var c in courses)
+                            {
+                                <option value="@c.CourseId">@c.CourseName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Track</label>
+                        <select class="form-control" name="TrackId" id="edit-enr-trackid" required>
+                            @foreach (var t in tracks)
+                            {
+                                <option value="@t.TrackId">@t.Course?.CourseName — @t.TrackName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Enrollment Date</label>
+                        <input type="date" class="form-control" name="EnrollmentDate" id="edit-enr-date" />
+                    </div>
+                </div>
+                <div class="css-modal-footer">
+                    <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                    <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Update Enrollment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</main>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            $('.js-edit-enr').on('click', function () {
+                $('#edit-enr-id').val($(this).data('id'));
+                $('#edit-enr-studentid').val($(this).data('studentid'));
+                $('#edit-enr-courseid').val($(this).data('courseid'));
+                $('#edit-enr-trackid').val($(this).data('trackid'));
+                $('#edit-enr-date').val($(this).data('date') || '');
+            });
+
+            $('#add-enr-form').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("Save", "Enrollments")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Saved!', 'Enrollment added successfully.', 'success').then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                });
+            });
+
+            $('#edit-enr-form').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("Save", "Enrollments")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Updated!', 'Enrollment updated successfully.', 'success').then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                });
+            });
+
+            $('.js-delete-enr').on('click', function (e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Delete this enrollment? This cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel'
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '@Url.Action("Delete", "Enrollments")/' + id,
+                            type: 'POST',
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire('Deleted!', 'Enrollment has been deleted.', 'success').then(function () { location.reload(); });
+                                } else {
+                                    Swal.fire('Error', response.message, 'error');
+                                }
+                            },
+                            error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
+}

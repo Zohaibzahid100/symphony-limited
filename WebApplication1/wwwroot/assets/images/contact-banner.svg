@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="280" viewBox="0 0 800 280">
+  <rect width="800" height="280" rx="16" fill="#10141c"/>
+  <rect x="0" y="0" width="800" height="3" fill="#d4af37"/>
+  <text x="400" y="110" font-family="Arial" font-size="56" text-anchor="middle">&#128231;</text>
+  <text x="400" y="168" font-family="Georgia,serif" font-size="26" font-weight="bold" fill="#d4af37" text-anchor="middle">Contact Us</text>
+  <text x="400" y="210" font-family="Arial,sans-serif" font-size="14" fill="#9fa8b8" text-anchor="middle">We are here to help you</text>
+</svg>

@@ -1,0 +1,61 @@
+﻿@{
+    string path = @"C:\Users\Admin";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login — Symphony Limited</title>
+  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml"/>
+  <link rel="stylesheet" href="~/assets/bootstrap.min.css"/>
+  <link rel="stylesheet" href="~/assets/bootstrap-icons.min.css"/>
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true"/>
+</head>
+<body class="admin-body">
+
+<div class="admin-login-wrap">
+  <div class="admin-login-box">
+
+    <div class="admin-login-logo">
+      <img src="~/assets/images/logo.svg" alt="Symphony Limited"/>
+      <h3>Admin <span class="text-gold">Panel</span></h3>
+      <p>Sign in to manage Symphony Limited's website.</p>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Email Address</label>
+      <div class="form-control-icon">
+        <i class="bi bi-envelope"></i>
+        <input type="email" class="form-control" placeholder="admin@symphony.edu.pk"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <div class="form-control-icon">
+        <i class="bi bi-lock"></i>
+        <input type="password" class="form-control" placeholder="Enter your password"/>
+      </div>
+    </div>
+
+    <div class="admin-remember-row">
+      <label><input type="checkbox"/> Remember me</label>
+      <a href="#">Forgot Password?</a>
+    </div>
+
+    <a asp-action="dashbord" asp-controller="Dashbord"  class="btn btn-gold btn-full btn-lg">
+      <i class="bi bi-box-arrow-in-right"></i> Login to Admin Panel
+    </a>
+
+    <div class="admin-login-footer">
+      <i class="bi bi-shield-lock"></i> Authorized personnel only &nbsp;•&nbsp; © 2026 Symphony Limited
+    </div>
+
+  </div>
+</div>
+
+<script src="~/assets/bootstrap.bundle.min.js"></script>
+</body>
+</html>

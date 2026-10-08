@@ -1,0 +1,105 @@
+﻿@using WebApplication1.Models
+@{
+    ViewData["Title"] = "Take Final Exam";
+    var exam = (FinalExam)ViewBag.Exam;
+    var mcqs = (List<FinalMcq>)ViewBag.Mcqs;
+}
+
+<div class="page-hero">
+    <div class="container text-center">
+        <div class="section-tag" style="margin:0 auto 16px;"><i class="bi bi-mortarboard"></i> Final Exam</div>
+        <h1>@exam.ExamTitle</h1>
+        <p style="max-width:560px;margin:12px auto 0;color:var(--text-secondary);">@exam.Course?.CourseName &bull; @mcqs.Count Questions &bull; @exam.TotalMarks Marks</p>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container" style="max-width:760px;">
+        @if (!mcqs.Any())
+        {
+            <div class="table-wrapper" style="padding:24px;text-align:center;color:var(--text-muted);">
+                No MCQs have been added for this final exam yet.
+            </div>
+        }
+        else
+        {
+            <form id="finalExamForm" onsubmit="return false;">
+                <input type="hidden" id="finalExamId" value="@exam.FinalExamId" />
+                @{ int qn = 0; }
+                @foreach (var m in mcqs)
+                {
+                    qn++;
+                    <div class="quiz-card" style="margin-bottom:18px;">
+                        <div class="quiz-question-text">
+                            <span style="color:var(--gold);font-family:var(--font-display);font-size:1.1rem;margin-right:8px;">Q@(qn).</span>@m.QuestionText
+                        </div>
+                        <div class="quiz-options" data-mcq="@m.McqId">
+                            @foreach (var opt in new[] { ("A", m.OptionA), ("B", m.OptionB), ("C", m.OptionC), ("D", m.OptionD) })
+                            {
+                                <label class="quiz-option" style="cursor:pointer;">
+                                    <input type="radio" name="fmcq_@m.McqId" value="@opt.Item1" style="margin-right:10px;" />
+                                    <div class="option-letter">@opt.Item1</div>
+                                    <span>@opt.Item2</span>
+                                </label>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <button type="button" id="submitFinalBtn" class="btn btn-gold btn-full" onclick="submitFinalExam()">
+                    Submit Exam <i class="bi bi-check2"></i>
+                </button>
+            </form>
+
+            <div id="finalResultBox" style="display:none;margin-top:28px;" class="table-wrapper">
+                <div class="table-header"><h4>Result</h4></div>
+                <div style="padding:24px;text-align:center;" id="finalResultContent"></div>
+            </div>
+        }
+    </div>
+</section>
+
+<script>
+    function submitFinalExam() {
+        const examId = document.getElementById('finalExamId').value;
+        const answers = {};
+        document.querySelectorAll('[data-mcq]').forEach(group => {
+            const mcqId = group.dataset.mcq;
+            const checked = group.querySelector('input[type=radio]:checked');
+            answers[mcqId] = checked ? checked.value : '';
+        });
+
+        const btn = document.getElementById('submitFinalBtn');
+        btn.disabled = true; btn.textContent = 'Submitting...';
+
+        fetch('/FinalExam/SubmitExam', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ examId: parseInt(examId), answers })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) {
+                alert(data.message || 'Could not submit exam.');
+                btn.disabled = false; btn.textContent = 'Submit Exam';
+                return;
+            }
+            document.getElementById('finalExamForm').style.display = 'none';
+            const box = document.getElementById('finalResultBox');
+            box.style.display = 'block';
+            document.getElementById('finalResultContent').innerHTML = `
+                <i class="bi bi-check-circle" style="font-size:2.2rem;color:var(--gold);display:block;margin-bottom:10px;"></i>
+                <h3 style="margin-bottom:8px;">Exam Submitted Successfully</h3>
+                <p style="color:var(--text-secondary);">
+                    ${data.announcementDate
+                        ? `Your result will be announced on <strong style="color:var(--gold);">${data.announcementDate}</strong>. Check the Results tab on that date.`
+                        : `Your result will appear on the Results tab shortly.`}
+                </p>
+                <a href="/Dashboard/Result" class="btn btn-gold" style="margin-top:16px;">Go to My Results</a>`;
+        })
+        .catch(() => {
+            alert('Network error — please try again.');
+            btn.disabled = false; btn.textContent = 'Submit Exam';
+        });
+    }
+</script>

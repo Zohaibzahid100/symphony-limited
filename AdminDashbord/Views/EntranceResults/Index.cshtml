@@ -1,0 +1,568 @@
+@{
+    var results = (List<AdminDashbord.Models.EntranceResult>)ViewBag.Results;
+    var answers = (List<AdminDashbord.Models.StudentMcqanswer>)ViewBag.Answers;
+    var students = (List<AdminDashbord.Models.Student>)ViewBag.Students;
+    var exams = (List<AdminDashbord.Models.EntranceExam>)ViewBag.Exams;
+    var tracks = (List<AdminDashbord.Models.CourseTrack>)ViewBag.Tracks;
+    var mcqs = (List<AdminDashbord.Models.EntranceMcq>)ViewBag.Mcqs;
+}
+
+<main class="dash-content">
+    <div class="page-intro">
+        <div>
+            <h3>Entrance <span>Results</span></h3>
+            <p>View entrance exam results, assigned tracks, and individual MCQ answers submitted by students.</p>
+        </div>
+    </div>
+    <input type="radio" name="rtabs" id="tab1" class="rtabs-input" checked />
+    <input type="radio" name="rtabs" id="tab2" class="rtabs-input" />
+    <div class="rtabs-nav">
+        <label for="tab1"><i class="bi bi-bar-chart"></i> Entrance Results</label>
+        <label for="tab2"><i class="bi bi-list-check"></i> Student MCQ Answers</label>
+    </div>
+    <div class="rtabs-content">
+        <div class="rtabs-panel" id="panel1">
+            <div class="table-wrapper">
+                <div class="table-toolbar">
+                    <h4><i class="bi bi-bar-chart"></i> All Entrance Results</h4>
+                    <div class="toolbar-actions">
+                        <div class="search-box"><i class="bi bi-search"></i><input type="text" data-table-search="entranceResultsTable" placeholder="Search..." /></div>
+                        <a href="#add-entranceResultsTable" class="btn btn-gold btn-sm"><i class="bi bi-plus-lg"></i> Add New</a>
+                    </div>
+                </div>
+                <table id="entranceResultsTable">
+                    <thead><tr><th>#</th><th>Student</th><th>Exam</th><th>Marks</th><th>Percentage</th><th>Status</th><th>Assigned Track</th><th>Result Date</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        @{ int i = 0; }
+                        @foreach (var r in results)
+                        {
+                            i++;
+                            var statusBadge = r.ResultStatus == "pass" ? "badge-green" : "badge-red";
+                            var trackBadge = (r.AssignedTrack?.TrackName ?? "").Contains("Advanced") ? "badge-blue" : "badge-gold";
+                            <tr>
+                                <td>@i</td>
+                                <td>@r.Student?.RollNumber — @r.Student?.User?.FullName</td>
+                                <td>@r.EntranceExam?.ExamTitle</td>
+                                <td>@r.MarksObtained / @r.TotalMarks</td>
+                                <td>@(r.Percentage?.ToString("0.#") ?? "—")%</td>
+                                <td><span class="badge @statusBadge">@r.ResultStatus</span></td>
+                                <td>
+                                    @if (r.AssignedTrack != null)
+                                    {
+                                        <span class="badge @trackBadge">@r.AssignedTrack.Course?.CourseName — @r.AssignedTrack.TrackName</span>
+                                    }
+                                    else
+                                    {
+                                        <span>—</span>
+                                    }
+                                </td>
+                                <td>@(r.ResultDate?.ToString("dd MMM yyyy") ?? "—")</td>
+                                <td>
+                                    <div class="row-actions">
+                                        <a href="#edit-entranceResultsTable" class="icon-btn js-edit-result" title="Edit"
+                                           data-id="@r.ResultId" data-studentid="@r.StudentId" data-examid="@r.EntranceExamId"
+                                           data-obtained="@r.MarksObtained" data-total="@r.TotalMarks" data-percentage="@r.Percentage"
+                                           data-status="@r.ResultStatus" data-trackid="@r.AssignedTrackId" data-date="@r.ResultDate?.ToString("yyyy-MM-dd")">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="#" class="icon-btn danger js-delete-result" title="Delete" data-id="@r.ResultId">
+                                            <i class="bi bi-trash3"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="table-footer"><span>Showing @results.Count of @results.Count entries</span></div>
+            </div>
+
+            <div class="css-modal" id="add-entranceResultsTable">
+                <div class="css-modal-box wide">
+                    <form id="add-result-form">
+                        <div class="css-modal-header">
+                            <h4><i class="bi bi-plus-circle"></i> Add Entrance Result</h4>
+                            <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                        </div>
+                        <div class="css-modal-body">
+                            <div class="form-group ">
+                                <label class="form-label">Student</label>
+                                <select class="form-control" name="StudentId" required>
+                                    <option value="">-- Select Student --</option>
+                                    @foreach (var s in students)
+                                    {
+                                        <option value="@s.StudentId">@s.RollNumber — @s.User?.FullName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Entrance Exam</label>
+                                <select class="form-control" name="EntranceExamId" required>
+                                    <option value="">-- Select Exam --</option>
+                                    @foreach (var e in exams)
+                                    {
+                                        <option value="@e.EntranceExamId">@e.ExamTitle</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="modal-grid-2">
+                                <div class="form-group ">
+                                    <label class="form-label">Marks Obtained</label>
+                                    <input type="number" class="form-control" name="MarksObtained" placeholder="e.g. 14" required />
+                                </div>
+                                <div class="form-group ">
+                                    <label class="form-label">Total Marks</label>
+                                    <input type="number" class="form-control" name="TotalMarks" placeholder="e.g. 20" required />
+                                </div>
+                            </div>
+                            <div class="modal-grid-2">
+                                <div class="form-group ">
+                                    <label class="form-label">Percentage (%)</label>
+                                    <input type="number" step="0.01" class="form-control" name="Percentage" placeholder="e.g. 70" />
+                                </div>
+                                <div class="form-group ">
+                                    <label class="form-label">Result Status</label>
+                                    <select class="form-control" name="ResultStatus">
+                                        <option value="pass">pass</option>
+                                        <option value="fail">fail</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Assigned Track</label>
+                                <select class="form-control" name="AssignedTrackId">
+                                    <option value="">-- None --</option>
+                                    @foreach (var t in tracks)
+                                    {
+                                        <option value="@t.TrackId">@t.Course?.CourseName — @t.TrackName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Result Date</label>
+                                <input type="date" class="form-control" name="ResultDate" />
+                            </div>
+                        </div>
+                        <div class="css-modal-footer">
+                            <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                            <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Save Result</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="css-modal" id="edit-entranceResultsTable">
+                <div class="css-modal-box wide">
+                    <form id="edit-result-form">
+                        <input type="hidden" name="ResultId" id="edit-result-id" />
+                        <div class="css-modal-header">
+                            <h4><i class="bi bi-pencil-square"></i> Edit Entrance Result</h4>
+                            <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                        </div>
+                        <div class="css-modal-body">
+                            <div class="form-group ">
+                                <label class="form-label">Student</label>
+                                <select class="form-control" name="StudentId" id="edit-result-studentid" required>
+                                    @foreach (var s in students)
+                                    {
+                                        <option value="@s.StudentId">@s.RollNumber — @s.User?.FullName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Entrance Exam</label>
+                                <select class="form-control" name="EntranceExamId" id="edit-result-examid" required>
+                                    @foreach (var e in exams)
+                                    {
+                                        <option value="@e.EntranceExamId">@e.ExamTitle</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="modal-grid-2">
+                                <div class="form-group ">
+                                    <label class="form-label">Marks Obtained</label>
+                                    <input type="number" class="form-control" name="MarksObtained" id="edit-result-obtained" required />
+                                </div>
+                                <div class="form-group ">
+                                    <label class="form-label">Total Marks</label>
+                                    <input type="number" class="form-control" name="TotalMarks" id="edit-result-total" required />
+                                </div>
+                            </div>
+                            <div class="modal-grid-2">
+                                <div class="form-group ">
+                                    <label class="form-label">Percentage (%)</label>
+                                    <input type="number" step="0.01" class="form-control" name="Percentage" id="edit-result-percentage" />
+                                </div>
+                                <div class="form-group ">
+                                    <label class="form-label">Result Status</label>
+                                    <select class="form-control" name="ResultStatus" id="edit-result-status">
+                                        <option value="pass">pass</option>
+                                        <option value="fail">fail</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Assigned Track</label>
+                                <select class="form-control" name="AssignedTrackId" id="edit-result-trackid">
+                                    <option value="">-- None --</option>
+                                    @foreach (var t in tracks)
+                                    {
+                                        <option value="@t.TrackId">@t.Course?.CourseName — @t.TrackName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Result Date</label>
+                                <input type="date" class="form-control" name="ResultDate" id="edit-result-date" />
+                            </div>
+                        </div>
+                        <div class="css-modal-footer">
+                            <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                            <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Update Result</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="rtabs-panel" id="panel2">
+            <div class="table-wrapper">
+                <div class="table-toolbar">
+                    <h4><i class="bi bi-list-check"></i> Student MCQ Answers</h4>
+                    <div class="toolbar-actions">
+                        <div class="search-box"><i class="bi bi-search"></i><input type="text" data-table-search="studentMcqAnsTable" placeholder="Search..." /></div>
+                        <a href="#add-studentMcqAnsTable" class="btn btn-gold btn-sm"><i class="bi bi-plus-lg"></i> Add New</a>
+                    </div>
+                </div>
+                <table id="studentMcqAnsTable">
+                    <thead><tr><th>#</th><th>Student</th><th>Exam</th><th>MCQ</th><th>Selected Option</th><th>Marks</th><th>Submitted At</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        @{ int ai = 0; }
+                        @foreach (var a in answers)
+                        {
+                            ai++;
+                            var optBadge = a.SelectedOption == a.Mcq?.CorrectOption ? "badge-gold" : "badge-red";
+                            <tr>
+                                <td>@ai</td>
+                                <td>@a.Student?.RollNumber — @a.Student?.User?.FullName</td>
+                                <td>@a.EntranceExam?.ExamTitle</td>
+                                <td>MCQ #@a.McqId</td>
+                                <td><span class="badge @optBadge">@a.SelectedOption</span></td>
+                                <td>@a.Marks</td>
+                                <td>@(a.SubmittedAt?.ToString("dd MMM yyyy HH:mm") ?? "—")</td>
+                                <td>
+                                    <div class="row-actions">
+                                        <a href="#edit-studentMcqAnsTable" class="icon-btn js-edit-answer" title="Edit"
+                                           data-id="@a.AnswerId" data-studentid="@a.StudentId" data-examid="@a.EntranceExamId"
+                                           data-mcqid="@a.McqId" data-option="@a.SelectedOption" data-marks="@a.Marks"
+                                           data-submitted="@a.SubmittedAt?.ToString("yyyy-MM-ddTHH:mm")">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="#" class="icon-btn danger js-delete-answer" title="Delete" data-id="@a.AnswerId">
+                                            <i class="bi bi-trash3"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="table-footer"><span>Showing @answers.Count of @answers.Count entries</span></div>
+            </div>
+
+            <div class="css-modal" id="add-studentMcqAnsTable">
+                <div class="css-modal-box wide">
+                    <form id="add-answer-form">
+                        <div class="css-modal-header">
+                            <h4><i class="bi bi-plus-circle"></i> Add MCQ Answer</h4>
+                            <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                        </div>
+                        <div class="css-modal-body">
+                            <div class="form-group ">
+                                <label class="form-label">Student</label>
+                                <select class="form-control" name="StudentId" required>
+                                    <option value="">-- Select Student --</option>
+                                    @foreach (var s in students)
+                                    {
+                                        <option value="@s.StudentId">@s.RollNumber — @s.User?.FullName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Entrance Exam</label>
+                                <select class="form-control" name="EntranceExamId" required>
+                                    <option value="">-- Select Exam --</option>
+                                    @foreach (var e in exams)
+                                    {
+                                        <option value="@e.EntranceExamId">@e.ExamTitle</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="modal-grid-2">
+                                <div class="form-group ">
+                                    <label class="form-label">MCQ</label>
+                                    <select class="form-control" name="McqId" required>
+                                        <option value="">-- Select MCQ --</option>
+                                        @foreach (var m in mcqs)
+                                        {
+                                            <option value="@m.McqId">#@m.McqId — @m.EntranceExam?.ExamTitle</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-group ">
+                                    <label class="form-label">Selected Option</label>
+                                    <select class="form-control" name="SelectedOption">
+                                        <option value="A">A</option>
+                                        <option value="B">B</option>
+                                        <option value="C">C</option>
+                                        <option value="D">D</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-grid-2">
+                                <div class="form-group ">
+                                    <label class="form-label">Marks</label>
+                                    <input type="number" class="form-control" name="Marks" placeholder="e.g. 1" required />
+                                </div>
+                                <div class="form-group ">
+                                    <label class="form-label">Submitted At</label>
+                                    <input type="datetime-local" class="form-control" name="SubmittedAt" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="css-modal-footer">
+                            <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                            <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Save Answer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="css-modal" id="edit-studentMcqAnsTable">
+                <div class="css-modal-box wide">
+                    <form id="edit-answer-form">
+                        <input type="hidden" name="AnswerId" id="edit-answer-id" />
+                        <div class="css-modal-header">
+                            <h4><i class="bi bi-pencil-square"></i> Edit MCQ Answer</h4>
+                            <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                        </div>
+                        <div class="css-modal-body">
+                            <div class="form-group ">
+                                <label class="form-label">Student</label>
+                                <select class="form-control" name="StudentId" id="edit-answer-studentid" required>
+                                    @foreach (var s in students)
+                                    {
+                                        <option value="@s.StudentId">@s.RollNumber — @s.User?.FullName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Entrance Exam</label>
+                                <select class="form-control" name="EntranceExamId" id="edit-answer-examid" required>
+                                    @foreach (var e in exams)
+                                    {
+                                        <option value="@e.EntranceExamId">@e.ExamTitle</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="modal-grid-2">
+                                <div class="form-group ">
+                                    <label class="form-label">MCQ</label>
+                                    <select class="form-control" name="McqId" id="edit-answer-mcqid" required>
+                                        @foreach (var m in mcqs)
+                                        {
+                                            <option value="@m.McqId">#@m.McqId — @m.EntranceExam?.ExamTitle</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-group ">
+                                    <label class="form-label">Selected Option</label>
+                                    <select class="form-control" name="SelectedOption" id="edit-answer-option">
+                                        <option value="A">A</option>
+                                        <option value="B">B</option>
+                                        <option value="C">C</option>
+                                        <option value="D">D</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-grid-2">
+                                <div class="form-group ">
+                                    <label class="form-label">Marks</label>
+                                    <input type="number" class="form-control" name="Marks" id="edit-answer-marks" required />
+                                </div>
+                                <div class="form-group ">
+                                    <label class="form-label">Submitted At</label>
+                                    <input type="datetime-local" class="form-control" name="SubmittedAt" id="edit-answer-submitted" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="css-modal-footer">
+                            <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                            <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Update Answer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            // =================== RESULT ===================
+
+            $('.js-edit-result').on('click', function () {
+                $('#edit-result-id').val($(this).data('id'));
+                $('#edit-result-studentid').val($(this).data('studentid'));
+                $('#edit-result-examid').val($(this).data('examid'));
+                $('#edit-result-obtained').val($(this).data('obtained'));
+                $('#edit-result-total').val($(this).data('total'));
+                $('#edit-result-percentage').val($(this).data('percentage') || '');
+                $('#edit-result-status').val($(this).data('status'));
+                $('#edit-result-trackid').val($(this).data('trackid') || '');
+                $('#edit-result-date').val($(this).data('date') || '');
+            });
+
+            $('#add-result-form').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("SaveResult", "EntranceResults")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Saved!', 'Result added successfully.', 'success').then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                });
+            });
+
+            $('#edit-result-form').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("SaveResult", "EntranceResults")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Updated!', 'Result updated successfully.', 'success').then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                });
+            });
+
+            $('.js-delete-result').on('click', function (e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Delete this result? This cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel'
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '@Url.Action("DeleteResult", "EntranceResults")/' + id,
+                            type: 'POST',
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire('Deleted!', 'Result has been deleted.', 'success').then(function () { location.reload(); });
+                                } else {
+                                    Swal.fire('Error', response.message, 'error');
+                                }
+                            },
+                            error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                        });
+                    }
+                });
+            });
+
+            // =================== ANSWER ===================
+
+            $('.js-edit-answer').on('click', function () {
+                $('#edit-answer-id').val($(this).data('id'));
+                $('#edit-answer-studentid').val($(this).data('studentid'));
+                $('#edit-answer-examid').val($(this).data('examid'));
+                $('#edit-answer-mcqid').val($(this).data('mcqid'));
+                $('#edit-answer-option').val($(this).data('option'));
+                $('#edit-answer-marks').val($(this).data('marks'));
+                $('#edit-answer-submitted').val($(this).data('submitted') || '');
+            });
+
+            $('#add-answer-form').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("SaveAnswer", "EntranceResults")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Saved!', 'Answer added successfully.', 'success').then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                });
+            });
+
+            $('#edit-answer-form').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("SaveAnswer", "EntranceResults")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Updated!', 'Answer updated successfully.', 'success').then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                });
+            });
+
+            $('.js-delete-answer').on('click', function (e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Delete this answer? This cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel'
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '@Url.Action("DeleteAnswer", "EntranceResults")/' + id,
+                            type: 'POST',
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire('Deleted!', 'Answer has been deleted.', 'success').then(function () { location.reload(); });
+                                } else {
+                                    Swal.fire('Error', response.message, 'error');
+                                }
+                            },
+                            error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
+}

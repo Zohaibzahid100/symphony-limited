@@ -1,0 +1,415 @@
+@{
+    var sessions = (List<AdminDashbord.Models.LabSession>)ViewBag.Sessions;
+    var registrations = (List<AdminDashbord.Models.StudentLabRegistration>)ViewBag.Registrations;
+    var courses = (List<AdminDashbord.Models.Course>)ViewBag.Courses;
+    var students = (List<AdminDashbord.Models.Student>)ViewBag.Students;
+}
+
+<main class="dash-content">
+    <div class="page-intro">
+        <div>
+            <h3>Lab <span>Sessions</span></h3>
+            <p>Manage lab practice sessions per course and student registrations for paid lab sessions.</p>
+        </div>
+    </div>
+    <input type="radio" name="rtabs" id="tab1" class="rtabs-input" checked />
+    <input type="radio" name="rtabs" id="tab2" class="rtabs-input" />
+    <div class="rtabs-nav">
+        <label for="tab1"><i class="bi bi-laptop"></i> Lab Sessions</label>
+        <label for="tab2"><i class="bi bi-person-check"></i> Lab Registrations</label>
+    </div>
+    <div class="rtabs-content">
+        <div class="rtabs-panel" id="panel1">
+            <div class="table-wrapper">
+                <div class="table-toolbar">
+                    <h4><i class="bi bi-laptop"></i> All Lab Sessions</h4>
+                    <div class="toolbar-actions">
+                        <div class="search-box"><i class="bi bi-search"></i><input type="text" data-table-search="labSessionsTable" placeholder="Search..." /></div>
+                        <a href="#add-labSessionsTable" class="btn btn-gold btn-sm"><i class="bi bi-plus-lg"></i> Add New</a>
+                    </div>
+                </div>
+                <table id="labSessionsTable">
+                    <thead><tr><th>#</th><th>Course</th><th>Session Name</th><th>Session Fee</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        @{ int i = 0; }
+                        @foreach (var s in sessions)
+                        {
+                            i++;
+                            <tr>
+                                <td>@i</td>
+                                <td>@s.Course?.CourseName</td>
+                                <td>@s.SessionName</td>
+                                <td>
+                                    @if (s.SessionFee == 0)
+                                    {
+                                        <span class="badge badge-green">Free</span>
+                                    }
+                                    else
+                                    {
+                                        <span>PKR @String.Format("{0:N0}", s.SessionFee)</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="row-actions">
+                                        <a href="#edit-labSessionsTable" class="icon-btn js-edit-session" title="Edit"
+                                           data-id="@s.LabSessionId" data-courseid="@s.CourseId" data-name="@s.SessionName" data-fee="@s.SessionFee">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="#" class="icon-btn danger js-delete-session" title="Delete" data-id="@s.LabSessionId">
+                                            <i class="bi bi-trash3"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="table-footer"><span>Showing @sessions.Count of @sessions.Count entries</span></div>
+            </div>
+
+            <div class="css-modal" id="add-labSessionsTable">
+                <div class="css-modal-box">
+                    <form id="add-session-form">
+                        <div class="css-modal-header">
+                            <h4><i class="bi bi-plus-circle"></i> Add New Lab Session</h4>
+                            <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                        </div>
+                        <div class="css-modal-body">
+                            <div class="form-group ">
+                                <label class="form-label">Course</label>
+                                <select class="form-control" name="CourseId" required>
+                                    <option value="">-- Select Course --</option>
+                                    @foreach (var c in courses)
+                                    {
+                                        <option value="@c.CourseId">@c.CourseName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Session Name</label>
+                                <input type="text" class="form-control" name="SessionName" placeholder="e.g. During Course Lab / After Completion Lab" required />
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Session Fee (PKR)</label>
+                                <input type="number" step="0.01" class="form-control" name="SessionFee" placeholder="e.g. 1500 (0 if free)" required />
+                            </div>
+                        </div>
+                        <div class="css-modal-footer">
+                            <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                            <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Save Session</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="css-modal" id="edit-labSessionsTable">
+                <div class="css-modal-box">
+                    <form id="edit-session-form">
+                        <input type="hidden" name="LabSessionId" id="edit-session-id" />
+                        <div class="css-modal-header">
+                            <h4><i class="bi bi-pencil-square"></i> Edit Lab Session</h4>
+                            <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                        </div>
+                        <div class="css-modal-body">
+                            <div class="form-group ">
+                                <label class="form-label">Course</label>
+                                <select class="form-control" name="CourseId" id="edit-session-courseid" required>
+                                    @foreach (var c in courses)
+                                    {
+                                        <option value="@c.CourseId">@c.CourseName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Session Name</label>
+                                <input type="text" class="form-control" name="SessionName" id="edit-session-name" required />
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Session Fee (PKR)</label>
+                                <input type="number" step="0.01" class="form-control" name="SessionFee" id="edit-session-fee" required />
+                            </div>
+                        </div>
+                        <div class="css-modal-footer">
+                            <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                            <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Update Session</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="rtabs-panel" id="panel2">
+            <div class="table-wrapper">
+                <div class="table-toolbar">
+                    <h4><i class="bi bi-person-check"></i> All Lab Registrations</h4>
+                    <div class="toolbar-actions">
+                        <div class="search-box"><i class="bi bi-search"></i><input type="text" data-table-search="labRegTable" placeholder="Search..." /></div>
+                        <a href="#add-labRegTable" class="btn btn-gold btn-sm"><i class="bi bi-plus-lg"></i> Add New</a>
+                    </div>
+                </div>
+                <table id="labRegTable">
+                    <thead><tr><th>#</th><th>Student</th><th>Lab Session</th><th>Register Date</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        @{ int ri = 0; }
+                        @foreach (var r in registrations)
+                        {
+                            ri++;
+                            <tr>
+                                <td>@ri</td>
+                                <td>@r.Student?.RollNumber — @r.Student?.User?.FullName</td>
+                                <td>@r.LabSession?.Course?.CourseName — @r.LabSession?.SessionName</td>
+                                <td>@(r.RegisterDate?.ToString("dd MMM yyyy") ?? "—")</td>
+                                <td>
+                                    <div class="row-actions">
+                                        <a href="#edit-labRegTable" class="icon-btn js-edit-labreg" title="Edit"
+                                           data-id="@r.LabRegistrationId" data-studentid="@r.StudentId" data-sessionid="@r.LabSessionId"
+                                           data-date="@r.RegisterDate?.ToString("yyyy-MM-dd")">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="#" class="icon-btn danger js-delete-labreg" title="Delete" data-id="@r.LabRegistrationId">
+                                            <i class="bi bi-trash3"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="table-footer"><span>Showing @registrations.Count of @registrations.Count entries</span></div>
+            </div>
+
+            <div class="css-modal" id="add-labRegTable">
+                <div class="css-modal-box">
+                    <form id="add-labreg-form">
+                        <div class="css-modal-header">
+                            <h4><i class="bi bi-plus-circle"></i> Add Lab Registration</h4>
+                            <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                        </div>
+                        <div class="css-modal-body">
+                            <div class="form-group ">
+                                <label class="form-label">Student</label>
+                                <select class="form-control" name="StudentId" required>
+                                    <option value="">-- Select Student --</option>
+                                    @foreach (var s in students)
+                                    {
+                                        <option value="@s.StudentId">@s.RollNumber — @s.User?.FullName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Lab Session</label>
+                                <select class="form-control" name="LabSessionId" required>
+                                    <option value="">-- Select Session --</option>
+                                    @foreach (var s in sessions)
+                                    {
+                                        <option value="@s.LabSessionId">@s.Course?.CourseName — @s.SessionName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Register Date</label>
+                                <input type="date" class="form-control" name="RegisterDate" />
+                            </div>
+                        </div>
+                        <div class="css-modal-footer">
+                            <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                            <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Save Registration</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="css-modal" id="edit-labRegTable">
+                <div class="css-modal-box">
+                    <form id="edit-labreg-form">
+                        <input type="hidden" name="LabRegistrationId" id="edit-labreg-id" />
+                        <div class="css-modal-header">
+                            <h4><i class="bi bi-pencil-square"></i> Edit Lab Registration</h4>
+                            <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                        </div>
+                        <div class="css-modal-body">
+                            <div class="form-group ">
+                                <label class="form-label">Student</label>
+                                <select class="form-control" name="StudentId" id="edit-labreg-studentid" required>
+                                    @foreach (var s in students)
+                                    {
+                                        <option value="@s.StudentId">@s.RollNumber — @s.User?.FullName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Lab Session</label>
+                                <select class="form-control" name="LabSessionId" id="edit-labreg-sessionid" required>
+                                    @foreach (var s in sessions)
+                                    {
+                                        <option value="@s.LabSessionId">@s.Course?.CourseName — @s.SessionName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Register Date</label>
+                                <input type="date" class="form-control" name="RegisterDate" id="edit-labreg-date" />
+                            </div>
+                        </div>
+                        <div class="css-modal-footer">
+                            <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                            <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Update Registration</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            // =================== SESSION ===================
+
+            $('.js-edit-session').on('click', function () {
+                $('#edit-session-id').val($(this).data('id'));
+                $('#edit-session-courseid').val($(this).data('courseid'));
+                $('#edit-session-name').val($(this).data('name'));
+                $('#edit-session-fee').val($(this).data('fee'));
+            });
+
+            $('#add-session-form').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("SaveSession", "LabSessions")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Saved!', 'Lab session added successfully.', 'success').then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                });
+            });
+
+            $('#edit-session-form').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("SaveSession", "LabSessions")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Updated!', 'Lab session updated successfully.', 'success').then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                });
+            });
+
+            $('.js-delete-session').on('click', function (e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Delete this lab session? This cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel'
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '@Url.Action("DeleteSession", "LabSessions")/' + id,
+                            type: 'POST',
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire('Deleted!', 'Lab session has been deleted.', 'success').then(function () { location.reload(); });
+                                } else {
+                                    Swal.fire('Error', response.message, 'error');
+                                }
+                            },
+                            error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                        });
+                    }
+                });
+            });
+
+            // =================== REGISTRATION ===================
+
+            $('.js-edit-labreg').on('click', function () {
+                $('#edit-labreg-id').val($(this).data('id'));
+                $('#edit-labreg-studentid').val($(this).data('studentid'));
+                $('#edit-labreg-sessionid').val($(this).data('sessionid'));
+                $('#edit-labreg-date').val($(this).data('date') || '');
+            });
+
+            $('#add-labreg-form').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("SaveRegistration", "LabSessions")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Saved!', 'Registration added successfully.', 'success').then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                });
+            });
+
+            $('#edit-labreg-form').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("SaveRegistration", "LabSessions")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Updated!', 'Registration updated successfully.', 'success').then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                });
+            });
+
+            $('.js-delete-labreg').on('click', function (e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Delete this registration? This cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel'
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '@Url.Action("DeleteRegistration", "LabSessions")/' + id,
+                            type: 'POST',
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire('Deleted!', 'Registration has been deleted.', 'success').then(function () { location.reload(); });
+                                } else {
+                                    Swal.fire('Error', response.message, 'error');
+                                }
+                            },
+                            error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
+}

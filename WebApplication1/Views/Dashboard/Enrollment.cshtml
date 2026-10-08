@@ -1,0 +1,52 @@
+﻿@using WebApplication1.Models
+@{
+    ViewData["Title"] = "My Enrollments";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    var enrollments = ViewBag.Enrollments as IEnumerable<dynamic>;
+
+}
+
+<div class="dash-welcome">
+    <h2>My <span style="color:var(--gold);">Enrollments</span></h2>
+    <p>Courses and tracks you are currently enrolled in.</p>
+</div>
+
+<div class="table-wrapper">
+    <div class="table-header"><h4>Enrollments</h4></div>
+    <table>
+        <thead>
+            <tr><th>Course</th><th>Track</th><th>Duration</th><th>Fee</th><th>Enrolled On</th></tr>
+        </thead>
+        <tbody>
+            @if (enrollments != null && enrollments.Any())
+            {
+                @foreach (var e in enrollments)
+                {
+                    <tr>
+                        <td>@e.CourseName</td>
+                        <td><span class="badge badge-gold">@e.TrackName</span></td>
+                        <td>@e.DurationMonths Months</td>
+                        <td>PKR @e.CourseFee.ToString("N0")</td>
+                        <td>@(e.EnrollmentDate?.ToString("dd MMM yyyy") ?? "—")</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="5" style="color:var(--text-muted);">You are not enrolled in any course yet. Pass an entrance exam to get enrolled automatically.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div style="margin-top:20px;">
+    <a asp-controller="Course" asp-action="course" class="btn btn-outline btn-sm"><i class="bi bi-collection"></i> Browse Courses</a>
+    <a asp-controller="EntranceExam" asp-action="enExam" class="btn btn-gold btn-sm"><i class="bi bi-pencil-square"></i> Apply for Entrance Exam</a>
+</div>
+<script>
+    const enrollments = @Html.Raw(
+                System.Text.Json.JsonSerializer.Serialize(ViewBag.Enrollments)
+        );
+
+    console.log(enrollments);
+</script>

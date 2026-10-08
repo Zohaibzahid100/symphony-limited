@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "Locked";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    var message = ViewBag.LockMessage as string ?? "Please apply for an entrance exam first to unlock this page.";
+}
+
+<div class="dash-welcome" style="text-align:center;padding:56px 36px;">
+    <i class="bi bi-lock-fill" style="font-size:2.6rem;color:var(--gold);margin-bottom:18px;display:block;position:relative;z-index:1;"></i>
+    <h2 style="position:relative;z-index:1;">Dashboard <span style="color:var(--gold);">Locked</span></h2>
+    <p style="max-width:480px;margin:10px auto 26px;position:relative;z-index:1;">@message</p>
+    <div style="position:relative;z-index:1;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a asp-controller="EntranceExam" asp-action="enExam" class="btn btn-gold"><i class="bi bi-pencil-square"></i> Apply for Entrance Exam</a>
+        <a asp-controller="Course" asp-action="course" class="btn btn-outline"><i class="bi bi-collection"></i> Browse Courses</a>
+    </div>
+</div>
+
+<div class="table-wrapper" style="margin-top:24px;">
+    <div class="table-header"><h4>How it works</h4></div>
+    <table>
+        <tbody>
+            <tr><td style="width:40px;"><span class="badge badge-gold">1</span></td><td>Apply for the entrance exam of the course you're interested in (from the Entrance Exams page).</td></tr>
+            <tr><td><span class="badge badge-gold">2</span></td><td>Take the MCQ entrance test online once your application is approved at the branch.</td></tr>
+            <tr><td><span class="badge badge-gold">3</span></td><td>Your score automatically assigns you to a Basic or Advanced track and enrolls you in the course.</td></tr>
+            <tr><td><span class="badge badge-gold">4</span></td><td>Once enrolled, your full dashboard — results, lab sessions, payments — unlocks automatically.</td></tr>
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,263 @@
+@model List<AdminDashbord.Models.Branch>
+<main class="dash-content">
+    <div class="page-intro">
+        <div>
+            <h3>Manage <span>Branches</span></h3>
+            <p>Add, edit or remove institute branches / centers.</p>
+        </div>
+    </div>
+    <div class="table-wrapper">
+        <div class="table-toolbar">
+            <h4><i class="bi bi-building"></i> All Branches</h4>
+            <div class="toolbar-actions">
+                <div class="search-box"><i class="bi bi-search"></i><input type="text" data-table-search="branchesTable" placeholder="Search..." /></div>
+                <a href="#add-branchesTable" class="btn btn-gold btn-sm"><i class="bi bi-plus-lg"></i> Add New</a>
+            </div>
+        </div>
+        <table id="branchesTable">
+            <thead><tr><th>#</th><th>Branch</th><th>Email</th><th>Address</th><th>Contact</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+                @{ int i = 0; }
+                @foreach (var b in Model)
+                {
+                    i++;
+                    var badgeClass = b.BranchStatus == "open" ? "badge-green" : "badge-red";
+                    var imgSrc = string.IsNullOrEmpty(b.BranchImg) ? "~/assets/images/branch-placeholder.svg" : $"~/uploads/branches/{b.BranchImg}";
+                    <tr>
+                        <td>@i</td>
+                        <td>
+                            <div class="table-cell-main">
+                                <img src="@Url.Content(imgSrc)" alt="" class="table-thumb" />
+                                <div>
+                                    <strong>@b.BranchName</strong><br />
+                                    <span class="table-cell-sub">@b.BranchCity</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>@b.BranchEmail</td>
+                        <td>@(b.Address ?? "—")</td>
+                        <td>@(b.BranchContact ?? "—")</td>
+                        <td><span class="badge @badgeClass">@b.BranchStatus</span></td>
+                        <td>
+                            <div class="row-actions">
+                                <a href="#edit-branchesTable" class="icon-btn js-edit-branch" title="Edit"
+                                   data-id="@b.BranchId" data-name="@b.BranchName" data-city="@b.BranchCity"
+                                   data-email="@b.BranchEmail" data-address="@b.Address" data-contact="@b.BranchContact"
+                                   data-status="@b.BranchStatus">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="#" class="icon-btn danger js-delete-branch" title="Delete" data-id="@b.BranchId" data-name="@b.BranchName">
+                                    <i class="bi bi-trash3"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="table-footer">
+            <span>Showing @Model.Count of @Model.Count entries</span>
+        </div>
+    </div>
+
+    <div class="css-modal" id="add-branchesTable">
+        <div class="css-modal-box">
+            <form id="add-branch-form" enctype="multipart/form-data">
+                <div class="css-modal-header">
+                    <h4><i class="bi bi-plus-circle"></i> Add New Branch</h4>
+                    <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                </div>
+                <div class="css-modal-body">
+                    <div class="form-group ">
+                        <label class="form-label">Branch Name</label>
+                        <input type="text" class="form-control" name="BranchName" placeholder="e.g. Gulshan Branch" required />
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Branch Image</label>
+                        <input type="file" class="form-control" name="BranchImageFile" accept="image/*" />
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Branch City</label>
+                        <input type="text" class="form-control" name="BranchCity" placeholder="e.g. Karachi" required />
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Branch Email</label>
+                        <input type="email" class="form-control" name="BranchEmail" placeholder="branch@symphony.edu.pk" required />
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Address</label>
+                        <textarea class="form-control" name="Address" rows="2" placeholder="Full address of the branch"></textarea>
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Branch Contact</label>
+                        <input type="tel" class="form-control" name="BranchContact" placeholder="021-XXXXXXXX" />
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Branch Status</label>
+                        <select class="form-control" name="BranchStatus">
+                            <option value="open">open</option>
+                            <option value="closed">closed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="css-modal-footer">
+                    <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                    <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Save Branch</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="css-modal" id="edit-branchesTable">
+        <div class="css-modal-box">
+            <form id="edit-branch-form" enctype="multipart/form-data">
+                <input type="hidden" name="BranchId" id="edit-branch-id" />
+                <div class="css-modal-header">
+                    <h4><i class="bi bi-pencil-square"></i> Edit Branch</h4>
+                    <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                </div>
+                <div class="css-modal-body">
+                    <div class="form-group ">
+                        <label class="form-label">Branch Name</label>
+                        <input type="text" class="form-control" name="BranchName" id="edit-branch-name" required />
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Branch Image <span class="table-cell-sub">(leave empty to keep current)</span></label>
+                        <input type="file" class="form-control" name="BranchImageFile" accept="image/*" />
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Branch City</label>
+                        <input type="text" class="form-control" name="BranchCity" id="edit-branch-city" required />
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Branch Email</label>
+                        <input type="email" class="form-control" name="BranchEmail" id="edit-branch-email" required />
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Address</label>
+                        <textarea class="form-control" name="Address" id="edit-branch-address" rows="2"></textarea>
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Branch Contact</label>
+                        <input type="tel" class="form-control" name="BranchContact" id="edit-branch-contact" />
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Branch Status</label>
+                        <select class="form-control" name="BranchStatus" id="edit-branch-status">
+                            <option value="open">open</option>
+                            <option value="closed">closed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="css-modal-footer">
+                    <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                    <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Update Branch</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</main>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            // ---------- Fill the Edit form when pencil icon is clicked ----------
+            $('.js-edit-branch').on('click', function () {
+                $('#edit-branch-id').val($(this).data('id'));
+                $('#edit-branch-name').val($(this).data('name'));
+                $('#edit-branch-city').val($(this).data('city'));
+                $('#edit-branch-email').val($(this).data('email'));
+                $('#edit-branch-address').val($(this).data('address') || '');
+                $('#edit-branch-contact').val($(this).data('contact') || '');
+                $('#edit-branch-status').val($(this).data('status'));
+            });
+
+            // ---------- Add Branch (AJAX, with image upload) ----------
+            $('#add-branch-form').on('submit', function (e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+
+                $.ajax({
+                    url: '@Url.Action("Save", "Branches")',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Saved!', 'Branch added successfully.', 'success')
+                                .then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
+                    }
+                });
+            });
+
+            // ---------- Edit Branch (AJAX, with image upload) ----------
+            $('#edit-branch-form').on('submit', function (e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+
+                $.ajax({
+                    url: '@Url.Action("Save", "Branches")',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Updated!', 'Branch updated successfully.', 'success')
+                                .then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
+                    }
+                });
+            });
+
+            // ---------- Delete Branch (AJAX) ----------
+            $('.js-delete-branch').on('click', function (e) {
+                e.preventDefault();
+                var branchId = $(this).data('id');
+                var branchName = $(this).data('name');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Delete branch "' + branchName + '"? This cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel'
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '@Url.Action("Delete", "Branches")/' + branchId,
+                            type: 'POST',
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire('Deleted!', 'Branch has been deleted.', 'success')
+                                        .then(function () { location.reload(); });
+                                } else {
+                                    Swal.fire('Error', response.message, 'error');
+                                }
+                            },
+                            error: function () {
+                                Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
+                            }
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
+}

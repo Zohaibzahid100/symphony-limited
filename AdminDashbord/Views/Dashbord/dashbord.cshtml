@@ -1,0 +1,159 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int totalStudents    = ViewBag.TotalStudents ?? 0;
+    int totalCourses     = ViewBag.TotalCourses ?? 0;
+    int totalBranches    = ViewBag.TotalBranches ?? 0;
+    int totalEnrollments = ViewBag.TotalEnrollments ?? 0;
+    decimal totalPayments= ViewBag.TotalPayments ?? 0;
+    int totalExams       = ViewBag.TotalExams ?? 0;
+
+    var recentStudents   = ViewBag.RecentStudents as List<AdminDashbord.Models.Student>;
+    var recentPayments   = ViewBag.RecentPayments as List<AdminDashbord.Models.Payment>;
+
+    string Fmt(decimal v)
+    {
+        if (v >= 1000000) return "PKR " + (v / 1000000m).ToString("0.#") + "M";
+        if (v >= 1000) return "PKR " + (v / 1000m).ToString("0.#") + "K";
+        return "PKR " + v.ToString("N0");
+    }
+}
+
+<div class="page-intro">
+    <div>
+        <h3>Admin <span>Dashboard</span></h3>
+        <p>Overview of Symphony Limited — branches, courses, students and finances.</p>
+    </div>
+    <span class="badge badge-gold">
+        <i class="bi bi-calendar3"></i>
+        Today: @DateTime.Now.ToString("dd MMM yyyy")
+    </span>
+</div>
+
+<!-- Stat Cards Row 1 -->
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="stat-icon gold"><i class="bi bi-people"></i></div>
+        <div class="stat-num">@totalStudents</div>
+        <div class="stat-label">Total Students</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon blue"><i class="bi bi-collection"></i></div>
+        <div class="stat-num">@totalCourses</div>
+        <div class="stat-label">Active Courses</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green"><i class="bi bi-building"></i></div>
+        <div class="stat-num">@totalBranches</div>
+        <div class="stat-label">Branches</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon red"><i class="bi bi-wallet2"></i></div>
+        <div class="stat-num">@Fmt(totalPayments)</div>
+        <div class="stat-label">Total Revenue</div>
+    </div>
+</div>
+
+<!-- Stat Cards Row 2 -->
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="stat-icon gold"><i class="bi bi-pencil-square"></i></div>
+        <div class="stat-num">@totalExams</div>
+        <div class="stat-label">Entrance Exams</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon blue"><i class="bi bi-journal-check"></i></div>
+        <div class="stat-num">@totalEnrollments</div>
+        <div class="stat-label">Enrollments</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green"><i class="bi bi-laptop"></i></div>
+        <div class="stat-num">—</div>
+        <div class="stat-label">Lab Sessions</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon red"><i class="bi bi-trophy"></i></div>
+        <div class="stat-num">—</div>
+        <div class="stat-label">Final Results</div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="grid-2 mb-2">
+
+    <!-- Recent Students -->
+    <div>
+        <div class="table-wrapper">
+            <div class="table-toolbar">
+                <h4><i class="bi bi-person-badge"></i> Recent Students</h4>
+                <a asp-controller="Students" asp-action="Index" class="btn btn-ghost btn-sm">
+                    View All <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <table>
+                <thead><tr><th>Student</th><th>Roll No.</th><th>Branch</th></tr></thead>
+                <tbody>
+                    @if (recentStudents != null && recentStudents.Count > 0)
+                    {
+                        @foreach (var s in recentStudents)
+                        {
+                            var initial = (s.User?.FullName ?? "?").Trim();
+                            initial = initial.Length > 0 ? initial.Substring(0, 1).ToUpper() : "?";
+                            <tr>
+                                <td>
+                                    <div class="table-cell-main">
+                                        <div class="table-avatar">@initial</div>
+                                        <div>
+                                            <strong>@s.User?.FullName</strong><br />
+                                            <span class="table-cell-sub">@s.User?.Email</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge badge-gold">@s.RollNumber</span></td>
+                                <td>@(s.Branch?.BranchName ?? "—")</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="3" style="text-align:center; color:var(--text-muted); padding:20px;">No students added yet.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent Payments -->
+    <div>
+        <div class="table-wrapper">
+            <div class="table-toolbar">
+                <h4><i class="bi bi-wallet2"></i> Recent Payments</h4>
+                <a asp-controller="Payments" asp-action="Index" class="btn btn-ghost btn-sm">
+                    View All <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <table>
+                <thead><tr><th>Student</th><th>Amount</th><th>Type</th></tr></thead>
+                <tbody>
+                    @if (recentPayments != null && recentPayments.Count > 0)
+                    {
+                        @foreach (var p in recentPayments)
+                        {
+                            <tr>
+                                <td>@p.Student?.User?.FullName</td>
+                                <td>PKR @p.Amount.ToString("N0")</td>
+                                <td><span class="badge badge-gold">@p.PaymentType</span></td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="3" style="text-align:center; color:var(--text-muted); padding:20px;">No payments recorded yet.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

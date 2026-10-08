@@ -1,0 +1,553 @@
+@{
+    var exams = (List<AdminDashbord.Models.EntranceExam>)ViewBag.Exams;
+    var mcqs = (List<AdminDashbord.Models.EntranceMcq>)ViewBag.Mcqs;
+    var courses = (List<AdminDashbord.Models.Course>)ViewBag.Courses;
+    var topics = (List<AdminDashbord.Models.CourseTopic>)ViewBag.Topics;
+}
+
+<main class="dash-content">
+    <div class="page-intro">
+        <div>
+            <h3>Entrance <span>Exams &amp; MCQs</span></h3>
+            <p>Schedule entrance exams for each course and manage their MCQ question bank.</p>
+        </div>
+    </div>
+    <input type="radio" name="rtabs" id="tab1" class="rtabs-input" checked />
+    <input type="radio" name="rtabs" id="tab2" class="rtabs-input" />
+    <div class="rtabs-nav">
+        <label for="tab1"><i class="bi bi-pencil-square"></i> Entrance Exams</label>
+        <label for="tab2"><i class="bi bi-patch-question"></i> Entrance MCQs</label>
+    </div>
+    <div class="rtabs-content">
+        <div class="rtabs-panel" id="panel1">
+            <div class="table-wrapper">
+                <div class="table-toolbar">
+                    <h4><i class="bi bi-pencil-square"></i> All Entrance Exams</h4>
+                    <div class="toolbar-actions">
+                        <div class="search-box"><i class="bi bi-search"></i><input type="text" data-table-search="entranceExamsTable" placeholder="Search..." /></div>
+                        <a href="#add-entranceExamsTable" class="btn btn-gold btn-sm"><i class="bi bi-plus-lg"></i> Add New</a>
+                    </div>
+                </div>
+                <table id="entranceExamsTable">
+                    <thead><tr><th>#</th><th>Course</th><th>Exam Title</th><th>Exam Date</th><th>Last Date to Apply</th><th>Fee</th><th>Total Marks</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        @{ int i = 0; }
+                        @foreach (var e in exams)
+                        {
+                            i++;
+                            var badgeClass = e.ExamStatus switch
+                            {
+                                "Upcoming" => "badge-blue",
+                                "Completed" => "badge-green",
+                                "Cancelled" => "badge-red",
+                                _ => "badge-gold"
+                            };
+                            <tr>
+                                <td>@i</td>
+                                <td>@e.Course?.CourseName</td>
+                                <td>@e.ExamTitle</td>
+                                <td>@e.ExamDate.ToString("dd MMM yyyy")</td>
+                                <td>@(e.LastDateToApply?.ToString("dd MMM yyyy") ?? "—")</td>
+                                <td>PKR @e.ExamFee.ToString("N0")</td>
+                                <td>@e.TotalMarks</td>
+                                <td><span class="badge @badgeClass">@e.ExamStatus</span></td>
+                                <td>
+                                    <div class="row-actions">
+                                        <a href="#edit-entranceExamsTable" class="icon-btn js-edit-exam" title="Edit"
+                                           data-id="@e.EntranceExamId" data-courseid="@e.CourseId" data-title="@e.ExamTitle"
+                                           data-date="@e.ExamDate.ToString("yyyy-MM-dd")" data-lastdate="@e.LastDateToApply?.ToString("yyyy-MM-dd")"
+                                           data-fee="@e.ExamFee" data-marks="@e.TotalMarks" data-status="@e.ExamStatus">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="#" class="icon-btn danger js-delete-exam" title="Delete" data-id="@e.EntranceExamId">
+                                            <i class="bi bi-trash3"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="table-footer"><span>Showing @exams.Count of @exams.Count entries</span></div>
+            </div>
+
+            <div class="css-modal" id="add-entranceExamsTable">
+                <div class="css-modal-box wide">
+                    <form id="add-exam-form">
+                        <div class="css-modal-header">
+                            <h4><i class="bi bi-plus-circle"></i> Add New Entrance Exam</h4>
+                            <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                        </div>
+                        <div class="css-modal-body">
+                            <div class="form-group ">
+                                <label class="form-label">Course</label>
+                                <select class="form-control" name="CourseId" required>
+                                    <option value="">-- Select Course --</option>
+                                    @foreach (var c in courses)
+                                    {
+                                        <option value="@c.CourseId">@c.CourseName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Exam Title</label>
+                                <input type="text" class="form-control" name="ExamTitle" placeholder="e.g. Web Development Entrance Exam" required />
+                            </div>
+                            <div class="modal-grid-2">
+                                <div class="form-group ">
+                                    <label class="form-label">Exam Date</label>
+                                    <input type="date" class="form-control" name="ExamDate" required />
+                                </div>
+                                <div class="form-group ">
+                                    <label class="form-label">Last Date to Apply</label>
+                                    <input type="date" class="form-control" name="LastDateToApply" />
+                                </div>
+                            </div>
+                            <div class="modal-grid-2">
+                                <div class="form-group ">
+                                    <label class="form-label">Exam Fee (PKR)</label>
+                                    <input type="number" step="0.01" class="form-control" name="ExamFee" placeholder="e.g. 500" required />
+                                </div>
+                                <div class="form-group ">
+                                    <label class="form-label">Total Marks</label>
+                                    <input type="number" class="form-control" name="TotalMarks" placeholder="e.g. 20" required />
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Exam Status</label>
+                                <select class="form-control" name="ExamStatus">
+                                    <option value="Upcoming">Upcoming</option>
+                                    <option value="Ongoing">Ongoing</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="css-modal-footer">
+                            <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                            <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Save Exam</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="css-modal" id="edit-entranceExamsTable">
+                <div class="css-modal-box wide">
+                    <form id="edit-exam-form">
+                        <input type="hidden" name="EntranceExamId" id="edit-exam-id" />
+                        <div class="css-modal-header">
+                            <h4><i class="bi bi-pencil-square"></i> Edit Entrance Exam</h4>
+                            <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                        </div>
+                        <div class="css-modal-body">
+                            <div class="form-group ">
+                                <label class="form-label">Course</label>
+                                <select class="form-control" name="CourseId" id="edit-exam-courseid" required>
+                                    @foreach (var c in courses)
+                                    {
+                                        <option value="@c.CourseId">@c.CourseName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Exam Title</label>
+                                <input type="text" class="form-control" name="ExamTitle" id="edit-exam-title" required />
+                            </div>
+                            <div class="modal-grid-2">
+                                <div class="form-group ">
+                                    <label class="form-label">Exam Date</label>
+                                    <input type="date" class="form-control" name="ExamDate" id="edit-exam-date" required />
+                                </div>
+                                <div class="form-group ">
+                                    <label class="form-label">Last Date to Apply</label>
+                                    <input type="date" class="form-control" name="LastDateToApply" id="edit-exam-lastdate" />
+                                </div>
+                            </div>
+                            <div class="modal-grid-2">
+                                <div class="form-group ">
+                                    <label class="form-label">Exam Fee (PKR)</label>
+                                    <input type="number" step="0.01" class="form-control" name="ExamFee" id="edit-exam-fee" required />
+                                </div>
+                                <div class="form-group ">
+                                    <label class="form-label">Total Marks</label>
+                                    <input type="number" class="form-control" name="TotalMarks" id="edit-exam-marks" required />
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Exam Status</label>
+                                <select class="form-control" name="ExamStatus" id="edit-exam-status">
+                                    <option value="Upcoming">Upcoming</option>
+                                    <option value="Ongoing">Ongoing</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="css-modal-footer">
+                            <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                            <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Update Exam</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="rtabs-panel" id="panel2">
+            <div class="table-wrapper">
+                <div class="table-toolbar">
+                    <h4><i class="bi bi-patch-question"></i> All Entrance MCQs</h4>
+                    <div class="toolbar-actions">
+                        <div class="search-box"><i class="bi bi-search"></i><input type="text" data-table-search="entranceMcqsTable" placeholder="Search..." /></div>
+                        <a href="#add-entranceMcqsTable" class="btn btn-gold btn-sm"><i class="bi bi-plus-lg"></i> Add New</a>
+                    </div>
+                </div>
+                <table id="entranceMcqsTable">
+                    <thead><tr><th>#</th><th>Exam</th><th>Topic</th><th>Question</th><th>Correct Option</th><th>Marks</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        @{ int mi = 0; }
+                        @foreach (var m in mcqs)
+                        {
+                            mi++;
+                            <tr>
+                                <td>@mi</td>
+                                <td>@m.EntranceExam?.ExamTitle</td>
+                                <td>@(m.Topic?.TopicName ?? "—")</td>
+                                <td>@m.QuestionText</td>
+                                <td><span class="badge badge-gold">@m.CorrectOption</span></td>
+                                <td>@m.Mcqmarks</td>
+                                <td>
+                                    <div class="row-actions">
+                                        <a href="#edit-entranceMcqsTable" class="icon-btn js-edit-mcq" title="Edit"
+                                           data-id="@m.McqId" data-examid="@m.EntranceExamId" data-topicid="@m.TopicId"
+                                           data-question="@m.QuestionText" data-a="@m.OptionA" data-b="@m.OptionB"
+                                           data-c="@m.OptionC" data-d="@m.OptionD" data-correct="@m.CorrectOption" data-marks="@m.Mcqmarks">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="#" class="icon-btn danger js-delete-mcq" title="Delete" data-id="@m.McqId">
+                                            <i class="bi bi-trash3"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="table-footer"><span>Showing @mcqs.Count of @mcqs.Count entries</span></div>
+            </div>
+
+            <div class="css-modal" id="add-entranceMcqsTable">
+                <div class="css-modal-box wide">
+                    <form id="add-mcq-form">
+                        <div class="css-modal-header">
+                            <h4><i class="bi bi-plus-circle"></i> Add New MCQ</h4>
+                            <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                        </div>
+                        <div class="css-modal-body">
+                            <div class="form-group ">
+                                <label class="form-label">Entrance Exam</label>
+                                <select class="form-control" name="EntranceExamId" required>
+                                    <option value="">-- Select Exam --</option>
+                                    @foreach (var e in exams)
+                                    {
+                                        <option value="@e.EntranceExamId">@e.ExamTitle</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Topic</label>
+                                <select class="form-control" name="TopicId">
+                                    <option value="">-- Select Topic --</option>
+                                    @foreach (var t in topics)
+                                    {
+                                        <option value="@t.TopicId">@t.TopicName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Question Text</label>
+                                <textarea class="form-control" name="QuestionText" rows="2" placeholder="Type the MCQ question here" required></textarea>
+                            </div>
+                            <div class="modal-grid-2">
+                                <div class="form-group ">
+                                    <label class="form-label">Option A</label>
+                                    <input type="text" class="form-control" name="OptionA" placeholder="Option A" required />
+                                </div>
+                                <div class="form-group ">
+                                    <label class="form-label">Option B</label>
+                                    <input type="text" class="form-control" name="OptionB" placeholder="Option B" required />
+                                </div>
+                            </div>
+                            <div class="modal-grid-2">
+                                <div class="form-group ">
+                                    <label class="form-label">Option C</label>
+                                    <input type="text" class="form-control" name="OptionC" placeholder="Option C" required />
+                                </div>
+                                <div class="form-group ">
+                                    <label class="form-label">Option D</label>
+                                    <input type="text" class="form-control" name="OptionD" placeholder="Option D" required />
+                                </div>
+                            </div>
+                            <div class="modal-grid-2">
+                                <div class="form-group ">
+                                    <label class="form-label">Correct Option</label>
+                                    <select class="form-control" name="CorrectOption">
+                                        <option value="A">A</option>
+                                        <option value="B">B</option>
+                                        <option value="C">C</option>
+                                        <option value="D">D</option>
+                                    </select>
+                                </div>
+                                <div class="form-group ">
+                                    <label class="form-label">MCQ Marks</label>
+                                    <input type="number" class="form-control" name="Mcqmarks" placeholder="e.g. 1" value="1" required />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="css-modal-footer">
+                            <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                            <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Save MCQ</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="css-modal" id="edit-entranceMcqsTable">
+                <div class="css-modal-box wide">
+                    <form id="edit-mcq-form">
+                        <input type="hidden" name="McqId" id="edit-mcq-id" />
+                        <div class="css-modal-header">
+                            <h4><i class="bi bi-pencil-square"></i> Edit MCQ</h4>
+                            <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                        </div>
+                        <div class="css-modal-body">
+                            <div class="form-group ">
+                                <label class="form-label">Entrance Exam</label>
+                                <select class="form-control" name="EntranceExamId" id="edit-mcq-examid" required>
+                                    @foreach (var e in exams)
+                                    {
+                                        <option value="@e.EntranceExamId">@e.ExamTitle</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Topic</label>
+                                <select class="form-control" name="TopicId" id="edit-mcq-topicid">
+                                    <option value="">-- Select Topic --</option>
+                                    @foreach (var t in topics)
+                                    {
+                                        <option value="@t.TopicId">@t.TopicName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group ">
+                                <label class="form-label">Question Text</label>
+                                <textarea class="form-control" name="QuestionText" id="edit-mcq-question" rows="2" required></textarea>
+                            </div>
+                            <div class="modal-grid-2">
+                                <div class="form-group ">
+                                    <label class="form-label">Option A</label>
+                                    <input type="text" class="form-control" name="OptionA" id="edit-mcq-a" required />
+                                </div>
+                                <div class="form-group ">
+                                    <label class="form-label">Option B</label>
+                                    <input type="text" class="form-control" name="OptionB" id="edit-mcq-b" required />
+                                </div>
+                            </div>
+                            <div class="modal-grid-2">
+                                <div class="form-group ">
+                                    <label class="form-label">Option C</label>
+                                    <input type="text" class="form-control" name="OptionC" id="edit-mcq-c" required />
+                                </div>
+                                <div class="form-group ">
+                                    <label class="form-label">Option D</label>
+                                    <input type="text" class="form-control" name="OptionD" id="edit-mcq-d" required />
+                                </div>
+                            </div>
+                            <div class="modal-grid-2">
+                                <div class="form-group ">
+                                    <label class="form-label">Correct Option</label>
+                                    <select class="form-control" name="CorrectOption" id="edit-mcq-correct">
+                                        <option value="A">A</option>
+                                        <option value="B">B</option>
+                                        <option value="C">C</option>
+                                        <option value="D">D</option>
+                                    </select>
+                                </div>
+                                <div class="form-group ">
+                                    <label class="form-label">MCQ Marks</label>
+                                    <input type="number" class="form-control" name="Mcqmarks" id="edit-mcq-marks" required />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="css-modal-footer">
+                            <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                            <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Update MCQ</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            // =================== EXAM ===================
+
+            $('.js-edit-exam').on('click', function () {
+                $('#edit-exam-id').val($(this).data('id'));
+                $('#edit-exam-courseid').val($(this).data('courseid'));
+                $('#edit-exam-title').val($(this).data('title'));
+                $('#edit-exam-date').val($(this).data('date'));
+                $('#edit-exam-lastdate').val($(this).data('lastdate') || '');
+                $('#edit-exam-fee').val($(this).data('fee'));
+                $('#edit-exam-marks').val($(this).data('marks'));
+                $('#edit-exam-status').val($(this).data('status'));
+            });
+
+            $('#add-exam-form').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("SaveExam", "EntranceExams")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Saved!', 'Exam added successfully.', 'success').then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                });
+            });
+
+            $('#edit-exam-form').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("SaveExam", "EntranceExams")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Updated!', 'Exam updated successfully.', 'success').then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                });
+            });
+
+            $('.js-delete-exam').on('click', function (e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Delete this entrance exam? This cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel'
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '@Url.Action("DeleteExam", "EntranceExams")/' + id,
+                            type: 'POST',
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire('Deleted!', 'Exam has been deleted.', 'success').then(function () { location.reload(); });
+                                } else {
+                                    Swal.fire('Error', response.message, 'error');
+                                }
+                            },
+                            error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                        });
+                    }
+                });
+            });
+
+            // =================== MCQ ===================
+
+            $('.js-edit-mcq').on('click', function () {
+                $('#edit-mcq-id').val($(this).data('id'));
+                $('#edit-mcq-examid').val($(this).data('examid'));
+                $('#edit-mcq-topicid').val($(this).data('topicid') || '');
+                $('#edit-mcq-question').val($(this).data('question'));
+                $('#edit-mcq-a').val($(this).data('a'));
+                $('#edit-mcq-b').val($(this).data('b'));
+                $('#edit-mcq-c').val($(this).data('c'));
+                $('#edit-mcq-d').val($(this).data('d'));
+                $('#edit-mcq-correct').val($(this).data('correct'));
+                $('#edit-mcq-marks').val($(this).data('marks'));
+            });
+
+            $('#add-mcq-form').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("SaveMcq", "EntranceExams")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Saved!', 'MCQ added successfully.', 'success').then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                });
+            });
+
+            $('#edit-mcq-form').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("SaveMcq", "EntranceExams")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Updated!', 'MCQ updated successfully.', 'success').then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                });
+            });
+
+            $('.js-delete-mcq').on('click', function (e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Delete this MCQ? This cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel'
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '@Url.Action("DeleteMcq", "EntranceExams")/' + id,
+                            type: 'POST',
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire('Deleted!', 'MCQ has been deleted.', 'success').then(function () { location.reload(); });
+                                } else {
+                                    Swal.fire('Error', response.message, 'error');
+                                }
+                            },
+                            error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
+}

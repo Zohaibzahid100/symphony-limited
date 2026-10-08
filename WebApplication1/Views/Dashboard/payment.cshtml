@@ -1,0 +1,39 @@
+﻿@using WebApplication1.Models
+@{
+    ViewData["Title"] = "Payments";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    var payments = (List<Payment>)ViewBag.Payments;
+    decimal totalPaid = ViewBag.TotalPaid;
+}
+
+<div class="dash-welcome">
+    <h2>My <span style="color:var(--gold);">Payments</span></h2>
+    <p>Total Paid So Far: <strong style="color:var(--gold);">PKR @totalPaid.ToString("N0")</strong></p>
+</div>
+
+<div class="table-wrapper">
+    <div class="table-header"><h4>Payment History</h4></div>
+    <table>
+        <thead><tr><th>Type</th><th>Amount</th><th>Method</th><th>Reference</th><th>Date</th></tr></thead>
+        <tbody>
+            @if (payments.Any())
+            {
+                @foreach (var p in payments)
+                {
+                    <tr>
+                        <td>@p.PaymentType</td>
+                        <td>PKR @p.Amount.ToString("N0")</td>
+                        <td>@p.PaymentMethod</td>
+                        <td>@(p.ReferenceNumber ?? "—")</td>
+                        <td>@(p.PaymentDate?.ToString("dd MMM yyyy") ?? "—")</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="5" style="color:var(--text-muted);">No payments recorded yet. Visit your branch to pay your entrance/course fee.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+

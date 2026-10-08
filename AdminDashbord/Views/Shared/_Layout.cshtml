@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - Symphony Limited</title>
+
+    <link rel="stylesheet" href="~/assets/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/assets/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/style.css" />
+    <link rel="stylesheet" href="~/css/auth.css" />
+</head>
+
+<body class="dashboard-body admin-body">
+
+    <input type="checkbox" id="sb-toggle" class="visually-hidden-input" />
+
+    @await Html.PartialAsync("_Topbar")
+
+    <div class="dash-layout">
+
+        <label class="sb-overlay" for="sb-toggle"></label>
+
+        @await Html.PartialAsync("_Sidebar")
+
+        <main class="dash-content">
+            @RenderBody()
+        </main>
+
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/assets/bootstrap.bundle.min.js"></script>
+    <script src="~/js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

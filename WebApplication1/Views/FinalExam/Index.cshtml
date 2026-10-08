@@ -1,0 +1,52 @@
+﻿@using WebApplication1.Models
+@{
+    ViewData["Title"] = "Final Exams";
+    var exams = (List<FinalExam>)ViewBag.Exams;
+    var takenIds = (List<int>)ViewBag.TakenIds;
+}
+
+<div class="page-hero">
+    <div class="container text-center">
+        <div class="section-tag" style="margin:0 auto 16px;"><i class="bi bi-mortarboard"></i> Final Assessment</div>
+        <h1>Final <span style="color:var(--gold);">Exams</span></h1>
+        <p style="max-width:560px;margin:12px auto 0;color:var(--text-secondary);">Final exams for the courses you're currently enrolled in.</p>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container" style="max-width:760px;">
+        @if (!exams.Any())
+        {
+            <div class="table-wrapper" style="padding:24px;text-align:center;color:var(--text-muted);">
+                No final exams available yet. You'll see them here once your enrolled course schedules one.
+            </div>
+        }
+        else
+        {
+            @foreach (var exam in exams)
+            {
+                bool taken = takenIds.Contains(exam.FinalExamId);
+                <div class="exam-card" style="margin-bottom:16px;">
+                    <div>
+                        <span class="badge badge-gold">@exam.Course?.CourseName</span>
+                        <h3 style="font-size:1.05rem;margin:8px 0 6px;">@exam.ExamTitle</h3>
+                        <div class="exam-meta">
+                            <span class="exam-meta-item"><i class="bi bi-calendar3"></i>@(exam.ExamDate?.ToString("dd MMM yyyy") ?? "TBA")</span>
+                            <span class="exam-meta-item"><i class="bi bi-list-check"></i>@exam.TotalMarks Marks</span>
+                        </div>
+                    </div>
+                    <div style="flex-shrink:0;">
+                        @if (taken)
+                        {
+                            <span class="badge badge-green"><i class="bi bi-check2"></i> Completed</span>
+                        }
+                        else
+                        {
+                            <a asp-controller="FinalExam" asp-action="TakeExam" asp-route-examId="@exam.FinalExamId" class="btn btn-gold">Take Exam <i class="bi bi-arrow-right"></i></a>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</section>

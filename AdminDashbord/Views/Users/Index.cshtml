@@ -1,0 +1,238 @@
+@model List<AdminDashbord.Models.User>
+
+<main class="dash-content">
+    <div class="page-intro">
+        <div>
+            <h3>Manage <span>Users</span></h3>
+            <p>All login accounts — both Admin and Student users of the platform.</p>
+        </div>
+    </div>
+    <div class="table-wrapper">
+        <div class="table-toolbar">
+            <h4><i class="bi bi-people"></i> All Users</h4>
+            <div class="toolbar-actions">
+                <div class="search-box"><i class="bi bi-search"></i><input type="text" data-table-search="usersTable" placeholder="Search..." /></div>
+                <a href="#add-usersTable" class="btn btn-gold btn-sm"><i class="bi bi-plus-lg"></i> Add New</a>
+            </div>
+        </div>
+        <table id="usersTable">
+            <thead><tr><th>#</th><th>User</th><th>Email</th><th>Phone</th><th>Role</th><th>Actions</th></tr></thead>
+            <tbody>
+                @{ int i = 0; }
+                @foreach (var u in Model)
+                {
+                    i++;
+                    var initial = u.FullName.Trim().Length > 0 ? u.FullName.Trim().Substring(0, 1).ToUpper() : "?";
+                    var roleBadge = u.Role == "Admin" ? "badge-gold" : "badge-blue";
+                    <tr>
+                        <td>@i</td>
+                        <td>
+                            <div class="table-cell-main">
+                                <div class="table-avatar">@initial</div>
+                                <div>
+                                    <strong>@u.FullName</strong><br />
+                                    <span class="table-cell-sub">@u.Email</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>@u.Email</td>
+                        <td>@(u.Phone ?? "—")</td>
+                        <td><span class="badge @roleBadge">@u.Role</span></td>
+                        <td>
+                            <div class="row-actions">
+                                <a href="#edit-usersTable" class="icon-btn js-edit-user" title="Edit"
+                                   data-id="@u.UserId" data-name="@u.FullName" data-email="@u.Email"
+                                   data-phone="@u.Phone" data-role="@u.Role">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="#" class="icon-btn danger js-delete-user" title="Delete" data-id="@u.UserId" data-name="@u.FullName">
+                                    <i class="bi bi-trash3"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="table-footer"><span>Showing @Model.Count of @Model.Count entries</span></div>
+    </div>
+
+    <div class="css-modal" id="add-usersTable">
+        <div class="css-modal-box">
+            <form id="add-user-form" enctype="multipart/form-data">
+                <div class="css-modal-header">
+                    <h4><i class="bi bi-person-plus"></i> Add New User</h4>
+                    <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                </div>
+                <div class="css-modal-body">
+                    <div class="form-group ">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" name="FullName" placeholder="e.g. Ahmed Raza" required />
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-control" name="Email" placeholder="user@email.com" required />
+                    </div>
+                    <div class="modal-grid-2">
+                        <div class="form-group ">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" name="Password" placeholder="Set a password" required />
+                        </div>
+                        <div class="form-group ">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" name="Phone" placeholder="03XX-XXXXXXX" />
+                        </div>
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">User Image</label>
+                        <input type="file" class="form-control" name="UserImageFile" accept="image/*" />
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Role</label>
+                        <select class="form-control" name="Role">
+                            <option value="student">student</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="css-modal-footer">
+                    <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                    <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Save User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="css-modal" id="edit-usersTable">
+        <div class="css-modal-box">
+            <form id="edit-user-form" enctype="multipart/form-data">
+                <input type="hidden" name="UserId" id="edit-user-id" />
+                <div class="css-modal-header">
+                    <h4><i class="bi bi-pencil-square"></i> Edit User</h4>
+                    <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                </div>
+                <div class="css-modal-body">
+                    <div class="form-group ">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" name="FullName" id="edit-user-name" required />
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-control" name="Email" id="edit-user-email" required />
+                    </div>
+                    <div class="modal-grid-2">
+                        <div class="form-group ">
+                            <label class="form-label">New Password <span class="table-cell-sub">(leave empty to keep)</span></label>
+                            <input type="password" class="form-control" name="Password" placeholder="Leave empty to keep current" />
+                        </div>
+                        <div class="form-group ">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" name="Phone" id="edit-user-phone" />
+                        </div>
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">User Image <span class="table-cell-sub">(leave empty to keep current)</span></label>
+                        <input type="file" class="form-control" name="UserImageFile" accept="image/*" />
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Role</label>
+                        <select class="form-control" name="Role" id="edit-user-role">
+                            <option value="student">student</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="css-modal-footer">
+                    <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                    <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Update User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</main>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            $('.js-edit-user').on('click', function () {
+                $('#edit-user-id').val($(this).data('id'));
+                $('#edit-user-name').val($(this).data('name'));
+                $('#edit-user-email').val($(this).data('email'));
+                $('#edit-user-phone').val($(this).data('phone') || '');
+                $('#edit-user-role').val($(this).data('role'));
+            });
+
+            $('#add-user-form').on('submit', function (e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                $.ajax({
+                    url: '@Url.Action("Save", "Users")',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Saved!', 'User added successfully.', 'success').then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                });
+            });
+
+            $('#edit-user-form').on('submit', function (e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                $.ajax({
+                    url: '@Url.Action("Save", "Users")',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Updated!', 'User updated successfully.', 'success').then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                });
+            });
+
+            $('.js-delete-user').on('click', function (e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+                var name = $(this).data('name');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Delete user "' + name + '"? This cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel'
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '@Url.Action("Delete", "Users")/' + id,
+                            type: 'POST',
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire('Deleted!', 'User has been deleted.', 'success').then(function () { location.reload(); });
+                                } else {
+                                    Swal.fire('Error', response.message, 'error');
+                                }
+                            },
+                            error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
+}

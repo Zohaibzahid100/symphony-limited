@@ -1,0 +1,130 @@
+@{
+    ViewData["Title"] = "Admin Login";
+    Layout = "_AuthLayout";
+}
+
+<div class="auth-card">
+
+    <div class="auth-brand">
+        <div class="auth-logo">
+            <i class="bi bi-shield-lock"></i>
+        </div>
+        <h2>Symphony Limited</h2>
+        <p>Admin Panel — Sign in to continue</p>
+    </div>
+
+    <form id="login-form" class="auth-form" novalidate>
+
+        <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <div class="auth-input-wrap">
+                <i class="bi bi-envelope"></i>
+                <input type="email" class="form-control" id="login-email"
+                       name="email" placeholder="admin@symphony.edu.pk" autocomplete="username" />
+            </div>
+            <span class="field-error" id="err-email"></span>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="auth-input-wrap">
+                <i class="bi bi-lock"></i>
+                <input type="password" class="form-control" id="login-password"
+                       name="password" placeholder="Enter your password" autocomplete="current-password" />
+                <button type="button" class="input-toggle-password" id="toggle-pass" title="Show/Hide password">
+                    <i class="bi bi-eye" id="toggle-pass-icon"></i>
+                </button>
+            </div>
+            <span class="field-error" id="err-password"></span>
+        </div>
+
+        <button type="submit" class="btn-auth" id="login-btn">
+            <i class="bi bi-box-arrow-in-right"></i> Sign In
+        </button>
+
+    </form>
+
+    <div class="auth-footer">
+        Symphony Limited &copy; @DateTime.Now.Year — <span>Admin Panel</span>
+    </div>
+
+</div>
+
+@section Scripts {
+<script>
+$(document).ready(function () {
+
+    // ---- Password Show / Hide ----
+    $('#toggle-pass').on('click', function () {
+        var input = $('#login-password');
+        var icon = $('#toggle-pass-icon');
+        if (input.attr('type') === 'password') {
+            input.attr('type', 'text');
+            icon.removeClass('bi-eye').addClass('bi-eye-slash');
+        } else {
+            input.attr('type', 'password');
+            icon.removeClass('bi-eye-slash').addClass('bi-eye');
+        }
+    });
+
+    // ---- Clear error on typing ----
+    $('#login-email').on('input', function () { $('#err-email').text(''); });
+    $('#login-password').on('input', function () { $('#err-password').text(''); });
+
+    // ---- Form Submit ----
+    $('#login-form').on('submit', function (e) {
+        e.preventDefault();
+
+        // Client-side empty check
+        var email    = $('#login-email').val().trim();
+        var password = $('#login-password').val();
+        var valid    = true;
+
+        if (!email) {
+            $('#err-email').text('Email address is required.');
+            valid = false;
+        } else if (!/\S+@@\S+\.\S+/.test(email)) {
+            $('#err-email').text('Please enter a valid email address.');
+            valid = false;
+        }
+
+        if (!password) {
+            $('#err-password').text('Password is required.');
+            valid = false;
+        }
+
+        if (!valid) return;
+
+        var btn = $('#login-btn');
+        btn.prop('disabled', true).html('<i class="bi bi-arrow-repeat"></i> Signing in...');
+
+        $.ajax({
+            url: '@Url.Action("Login", "Account")',
+            type: 'POST',
+            data: { email: email, password: password },
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Welcome Back!',
+                        text: 'Redirecting to dashboard...',
+                        timer: 1200,
+                        showConfirmButton: false
+                    }).then(function () {
+                        window.location.href = '@Url.Action("dashbord", "Dashbord")';
+                    });
+                } else {
+                    Swal.fire('Login Failed', response.message, 'error');
+                    btn.prop('disabled', false).html('<i class="bi bi-box-arrow-in-right"></i> Sign In');
+                }
+            },
+            error: function () {
+                Swal.fire('Error', 'Could not connect to server. Please try again.', 'error');
+                btn.prop('disabled', false).html('<i class="bi bi-box-arrow-in-right"></i> Sign In');
+            }
+        });
+    });
+
+});
+</script>
+}

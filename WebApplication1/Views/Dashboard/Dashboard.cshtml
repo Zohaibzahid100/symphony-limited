@@ -1,0 +1,126 @@
+﻿@using WebApplication1.Models
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    var student = (Student)ViewBag.Student;
+}
+
+<!-- WELCOME -->
+<div class="dash-welcome">
+    <h2>Welcome back, @(student.User?.FullName ?? "Student")</h2>
+    <p>Roll No: @(student.RollNumber ?? "—") &bull; @(student.Branch?.BranchName ?? "No branch selected")</p>
+</div>
+
+<!-- STAT CARDS -->
+<div class="stat-grid">
+
+    <div class="stat-card">
+        <div class="stat-num">@ViewBag.EnrollmentCount</div>
+        <div class="stat-label">Courses Enrolled</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-num">@ViewBag.ExamsTaken</div>
+        <div class="stat-label">Exams Taken</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-num">@ViewBag.PaymentsMade</div>
+        <div class="stat-label">Payments Made</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-num">@ViewBag.BestScore%</div>
+        <div class="stat-label">Best Score</div>
+    </div>
+
+</div>
+
+<!-- ENTRANCE EXAM APPLICATIONS -->
+<div class="table-wrapper" style="margin-bottom:28px;">
+    <div class="table-header"><h4>My Entrance Exam Applications</h4></div>
+    <table>
+        @{
+            var applications = (List<EntranceExamApplication>)ViewBag.Applications;
+        }
+        @if (applications.Any())
+        {
+            @foreach (var a in applications)
+            {
+                <tr>
+                    <td><strong>@a.EntranceExam?.Course?.CourseName</strong><div style="font-size:.78rem;color:var(--text-muted);">@a.EntranceExam?.ExamTitle</div></td>
+                    <td>@a.Branch?.BranchName</td>
+                    <td>@a.ApplyDate.ToString("dd MMM yyyy")</td>
+                    <td><span class="badge @(a.Status == "Applied" ? "badge-green" : "badge-red")">@a.Status</span></td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr><td colspan="4" style="color:var(--text-muted);">No applications yet.</td></tr>
+        }
+    </table>
+</div>
+
+<!-- TABLES -->
+<div class="grid-2">
+
+    <div class="table-wrapper">
+        <div class="table-header"><h4>My Enrollments</h4></div>
+        <table>
+            @{
+                var enrollments = (List<StudentEnrollment>)ViewBag.Enrollments;
+            }
+            @if (enrollments.Any())
+            {
+                @foreach (var e in enrollments)
+                {
+                    <tr>
+                        <td>@e.Course?.CourseName <span class="badge badge-gold" style="margin-left:6px;">@e.Track?.TrackName</span></td>
+                        <td><span class="badge badge-green">Active</span></td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="2" style="color:var(--text-muted);">No enrollments yet. Apply for an entrance exam to get started.</td></tr>
+            }
+        </table>
+    </div>
+
+    <div class="table-wrapper">
+        <div class="table-header"><h4>Recent Payments</h4></div>
+        <table>
+            @{
+                var payments = (List<Payment>)ViewBag.Payments;
+            }
+            @if (payments.Any())
+            {
+                @foreach (var p in payments)
+                {
+                    <tr>
+                        <td>@p.PaymentType</td>
+                        <td>PKR @p.Amount.ToString("N0")</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="2" style="color:var(--text-muted);">No payments recorded yet.</td></tr>
+            }
+        </table>
+    </div>
+
+</div>
+
+<!-- QUICK ACTIONS -->
+<div class="grid-4">
+
+    <a class="card card-body" style="text-align:center;" asp-controller="Dashboard" asp-action="Result"><i class="bi bi-bar-chart" style="font-size:1.6rem;color:var(--gold);margin-bottom:8px;display:block;"></i>Results</a>
+    <a class="card card-body" style="text-align:center;" asp-controller="Dashboard" asp-action="Payment"><i class="bi bi-wallet2" style="font-size:1.6rem;color:var(--gold);margin-bottom:8px;display:block;"></i>Payments</a>
+    <a class="card card-body" style="text-align:center;" asp-controller="EntranceExam" asp-action="enExam"><i class="bi bi-pencil-square" style="font-size:1.6rem;color:var(--gold);margin-bottom:8px;display:block;"></i>Exam</a>
+    <a class="card card-body" style="text-align:center;" asp-controller="Dashboard" asp-action="Profile"><i class="bi bi-person-circle" style="font-size:1.6rem;color:var(--gold);margin-bottom:8px;display:block;"></i>Profile</a>
+
+</div>
+
+

@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - WebApplication1</title>
+    <script type="importmap"></script>
+     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> 
+    <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
+    @* <link rel="stylesheet" href="~/WebApplication1.styles.css" asp-append-version="true" /> *@
+<link rel="icon" href="`/assets/images/favicon.svg" type="image/svg+xml"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+</head>
+<body>
+    <header>
+        <!-- ══════════════ NAVBAR ══════════════ -->
+        <nav id="navbar">
+            <div class="container nav-inner">
+                <a class="nav-brand" asp-action="index" asp-controller="Home">
+                    <img src="~/assets/images/logo.svg" alt="Symphony Limited" style="height:42px;width:auto;" />
+                </a>
+                <div class="nav-links">
+                    <a asp-action="Index" asp-controller="Home" class="active">Home</a>
+                    <a asp-action="course" asp-controller="Course">Courses</a>
+                    <a asp-action="enExam" asp-controller="EntranceExam">Entrance Exams</a>
+                    <a asp-action="branches" asp-controller="Branches">Branches</a>
+                    <a asp-action="about" asp-controller="About">About Us</a>
+                    <a asp-action="contact" asp-controller="Contact">Contact</a>
+                </div>
+                <div class="nav-actions" id="navAuthSlot">
+                    @if (Context.Session.IsLoggedIn())
+                    {
+                        <a asp-controller="Dashboard" asp-action="Dashboard" class="btn btn-outline btn-sm">
+                            <i class="bi bi-speedometer2"></i> @Context.Session.GetString("FullName")
+                        </a>
+                        <a asp-controller="signin" asp-action="Logout" class="btn btn-gold btn-sm">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="signin"
+                           asp-action="login"
+                           class="btn btn-gold btn-sm">
+                            <i class="bi bi-person-circle"></i>
+                            Student Login
+                        </a>
+                    }
+                </div>
+
+                <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
+            </div>
+        </nav>
+        <div class="nav-mobile" id="mobileNav">
+            <a asp-action="Index" asp-controller="Home" class="active"><i class="bi bi-house"></i> Home</a>
+            <a asp-action="course" asp-controller="Course"><i class="bi bi-book"></i> Courses</a>
+            <a asp-action="enExam" asp-controller="EntranceExam"><i class="bi bi-pencil-square"></i> Entrance Exams</a>
+            <a asp-action="branches" asp-controller="Branches"><i class="bi bi-building"></i> Branches</a>
+            <a asp-action="about" asp-controller="About"><i class="bi bi-info-circle"></i> About Us</a>
+            <a asp-action="contact" asp-controller="Contact"><i class="bi bi-envelope"></i> Contact Us</a>
+            <div class="nav-mobile-actions" id="navAuthSlotMobile">
+                @if (Context.Session.IsLoggedIn())
+                {
+                    <a asp-controller="Dashbord" asp-action="dashbord" class="btn btn-outline btn-sm">
+                        <i class="bi bi-speedometer2"></i> @Context.Session.GetString("FullName")
+                    </a>
+                    <a asp-controller="signin" asp-action="Logout" class="btn btn-gold btn-sm">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="signin"
+                       asp-action="login"
+                       class="btn btn-gold btn-sm">
+                        <i class="bi bi-person-circle"></i>
+                        Student Login
+                    </a>
+                }
+            </div>
+        </div>
+        <div id="toastContainer" class="toast-container"></div>
+    </header>
+    <div class="">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <img src="~/assets/images/logo.svg" alt="Symphony Limited" style="height:44px;margin-bottom:4px;" />
+                    <p>Empowering students with industry-ready IT skills since 2015. Structured learning. Certified outcomes.</p>
+                    <div class="footer-social">
+                        <a href="https://www.facebook.com/symphonylimited" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="https://www.instagram.com/symphonylimited" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="https://www.linkedin.com/symphonylimited" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                        <a href="https://www.youtube.com/symphonylimited" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h5>Programs</h5>
+                    <ul>
+                        <li><a asp-action="course" asp-controller="Course">Web Development</a></li>
+                        <li><a asp-action="course" asp-controller="Course">Database Development</a></li>
+                        <li><a asp-action="course" asp-controller="Course">Graphic Designing</a></li>
+                        <li><a asp-action="course" asp-controller="Course">Networking</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h5>Students</h5>
+                    <ul>
+                        <li><a asp-action="enExam" asp-controller="EntranceExam">Entrance Exams</a></li>
+                        <li><a asp-area="StudentPortal"
+                               asp-controller="SignIn"
+                               asp-action="Login">
+                            Student Login   
+                        </a></li>
+                        <li><a asp-controller="Dashbord" asp-action="dashbord">My Dashboard</a></li>
+                        <li><a asp-action="branches" asp-controller="Branches">Find a Branch</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h5>Institute</h5>
+                    <ul>
+                        <li><a asp-action="about" asp-controller="About">About Us</a></li>
+                        <li><a asp-action="contact" asp-controller="Contact">Contact Us</a></li>
+                        <li><a asp-action="branches" asp-controller="Branches">Branches</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2025 Symphony Limited. All rights reserved.</span>
+                <span>Designed for <a href="index.html">Symphony Limited IT Institute</a></span>
+            </div>
+        </div>
+    </footer>
+
+    
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/script.js"></script>
+   
+    @if (Context.Session.IsLoggedIn())
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                Session.set({
+                    name: '@Html.Raw(Context.Session.GetString("FullName"))',
+                    role: '@Html.Raw(Context.Session.GetString("Role"))',
+                    studentId: @(Context.Session.GetStudentId() ?? 0)
+                });
+            });
+        </script>
+    }
+    else
+    {
+        <script>document.addEventListener('DOMContentLoaded', function () { Session.clear(); });</script>
+    }
+    @if (TempData["LoginSuccess"] != null)
+    {
+        <script>document.addEventListener('DOMContentLoaded', function(){ showToast('@Html.Raw(TempData["LoginSuccess"])', 'success'); });</script>
+    }
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

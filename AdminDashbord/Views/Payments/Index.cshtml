@@ -1,0 +1,287 @@
+@model List<AdminDashbord.Models.Payment>
+@{
+    var students = (List<AdminDashbord.Models.Student>)ViewBag.Students;
+    decimal totalCollected = ViewBag.TotalCollected;
+    decimal courseFees = ViewBag.CourseFees;
+    decimal entranceFees = ViewBag.EntranceFees;
+    decimal labFees = ViewBag.LabFees;
+
+    string Fmt(decimal v)
+    {
+        if (v >= 1000000) return "PKR " + (v / 1000000m).ToString("0.#") + "M";
+        if (v >= 1000) return "PKR " + (v / 1000m).ToString("0.#") + "K";
+        return "PKR " + v.ToString("N0");
+    }
+}
+
+<main class="dash-content">
+    <div class="page-intro">
+        <div>
+            <h3>Payments &amp; <span>Fee Records</span></h3>
+            <p>All entrance, course and lab fee transactions recorded by students.</p>
+        </div>
+    </div>
+    <div class="stat-grid">
+        <div class="stat-card">
+            <div class="stat-icon gold"><i class="bi bi-wallet2"></i></div>
+            <div class="stat-num">@Fmt(totalCollected)</div>
+            <div class="stat-label">Total Collected</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon green"><i class="bi bi-cash-coin"></i></div>
+            <div class="stat-num">@Fmt(courseFees)</div>
+            <div class="stat-label">Course Fees</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon blue"><i class="bi bi-pencil-square"></i></div>
+            <div class="stat-num">@Fmt(entranceFees)</div>
+            <div class="stat-label">Entrance Fees</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon red"><i class="bi bi-laptop"></i></div>
+            <div class="stat-num">@Fmt(labFees)</div>
+            <div class="stat-label">Lab Fees</div>
+        </div>
+    </div>
+    <div class="table-wrapper">
+        <div class="table-toolbar">
+            <h4><i class="bi bi-wallet2"></i> All Payment Records</h4>
+            <div class="toolbar-actions">
+                <div class="search-box"><i class="bi bi-search"></i><input type="text" data-table-search="paymentsTable" placeholder="Search..." /></div>
+                <a href="#add-paymentsTable" class="btn btn-gold btn-sm"><i class="bi bi-plus-lg"></i> Add New</a>
+            </div>
+        </div>
+        <table id="paymentsTable">
+            <thead><tr><th>#</th><th>Student</th><th>Amount</th><th>Method</th><th>Type</th><th>Reference No.</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody>
+                @{ int i = 0; }
+                @foreach (var p in Model)
+                {
+                    i++;
+                    <tr>
+                        <td>@i</td>
+                        <td>@p.Student?.RollNumber — @p.Student?.User?.FullName</td>
+                        <td>PKR @p.Amount.ToString("N0")</td>
+                        <td><span class="badge badge-gold">@p.PaymentMethod</span></td>
+                        <td>@p.PaymentType</td>
+                        <td>@(string.IsNullOrEmpty(p.ReferenceNumber) ? "—" : p.ReferenceNumber)</td>
+                        <td>@(p.PaymentDate?.ToString("dd MMM yyyy") ?? "—")</td>
+                        <td>
+                            <div class="row-actions">
+                                <a href="#edit-paymentsTable" class="icon-btn js-edit-pay" title="Edit"
+                                   data-id="@p.PaymentId" data-studentid="@p.StudentId" data-amount="@p.Amount"
+                                   data-method="@p.PaymentMethod" data-type="@p.PaymentType" data-ref="@p.ReferenceNumber"
+                                   data-date="@p.PaymentDate?.ToString("yyyy-MM-dd")">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="#" class="icon-btn danger js-delete-pay" title="Delete" data-id="@p.PaymentId">
+                                    <i class="bi bi-trash3"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="table-footer"><span>Showing @Model.Count of @Model.Count entries</span></div>
+    </div>
+
+    <div class="css-modal" id="add-paymentsTable">
+        <div class="css-modal-box wide">
+            <form id="add-pay-form">
+                <div class="css-modal-header">
+                    <h4><i class="bi bi-plus-circle"></i> Add New Payment</h4>
+                    <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                </div>
+                <div class="css-modal-body">
+                    <div class="form-group ">
+                        <label class="form-label">Student</label>
+                        <select class="form-control" name="StudentId" required>
+                            <option value="">-- Select Student --</option>
+                            @foreach (var s in students)
+                            {
+                                <option value="@s.StudentId">@s.RollNumber — @s.User?.FullName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="modal-grid-2">
+                        <div class="form-group ">
+                            <label class="form-label">Amount (PKR)</label>
+                            <input type="number" step="0.01" class="form-control" name="Amount" placeholder="e.g. 15000" required />
+                        </div>
+                        <div class="form-group ">
+                            <label class="form-label">Payment Method</label>
+                            <select class="form-control" name="PaymentMethod">
+                                <option value="Cash">Cash</option>
+                                <option value="Cheque">Cheque</option>
+                                <option value="Draft">Draft</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-grid-2">
+                        <div class="form-group ">
+                            <label class="form-label">Payment Type</label>
+                            <select class="form-control" name="PaymentType">
+                                <option value="EntranceFee">EntranceFee</option>
+                                <option value="CourseFee">CourseFee</option>
+                                <option value="LabFee">LabFee</option>
+                            </select>
+                        </div>
+                        <div class="form-group ">
+                            <label class="form-label">Reference Number</label>
+                            <input type="text" class="form-control" name="ReferenceNumber" placeholder="Cheque / Draft number (optional)" />
+                        </div>
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Payment Date</label>
+                        <input type="date" class="form-control" name="PaymentDate" />
+                    </div>
+                </div>
+                <div class="css-modal-footer">
+                    <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                    <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Save Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="css-modal" id="edit-paymentsTable">
+        <div class="css-modal-box wide">
+            <form id="edit-pay-form">
+                <input type="hidden" name="PaymentId" id="edit-pay-id" />
+                <div class="css-modal-header">
+                    <h4><i class="bi bi-pencil-square"></i> Edit Payment</h4>
+                    <a href="#" class="css-modal-close"><i class="bi bi-x-lg"></i></a>
+                </div>
+                <div class="css-modal-body">
+                    <div class="form-group ">
+                        <label class="form-label">Student</label>
+                        <select class="form-control" name="StudentId" id="edit-pay-studentid" required>
+                            @foreach (var s in students)
+                            {
+                                <option value="@s.StudentId">@s.RollNumber — @s.User?.FullName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="modal-grid-2">
+                        <div class="form-group ">
+                            <label class="form-label">Amount (PKR)</label>
+                            <input type="number" step="0.01" class="form-control" name="Amount" id="edit-pay-amount" required />
+                        </div>
+                        <div class="form-group ">
+                            <label class="form-label">Payment Method</label>
+                            <select class="form-control" name="PaymentMethod" id="edit-pay-method">
+                                <option value="Cash">Cash</option>
+                                <option value="Cheque">Cheque</option>
+                                <option value="Draft">Draft</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-grid-2">
+                        <div class="form-group ">
+                            <label class="form-label">Payment Type</label>
+                            <select class="form-control" name="PaymentType" id="edit-pay-type">
+                                <option value="EntranceFee">EntranceFee</option>
+                                <option value="CourseFee">CourseFee</option>
+                                <option value="LabFee">LabFee</option>
+                            </select>
+                        </div>
+                        <div class="form-group ">
+                            <label class="form-label">Reference Number</label>
+                            <input type="text" class="form-control" name="ReferenceNumber" id="edit-pay-ref" />
+                        </div>
+                    </div>
+                    <div class="form-group ">
+                        <label class="form-label">Payment Date</label>
+                        <input type="date" class="form-control" name="PaymentDate" id="edit-pay-date" />
+                    </div>
+                </div>
+                <div class="css-modal-footer">
+                    <a href="#" class="btn btn-ghost btn-sm">Cancel</a>
+                    <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-check-lg"></i> Update Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</main>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            $('.js-edit-pay').on('click', function () {
+                $('#edit-pay-id').val($(this).data('id'));
+                $('#edit-pay-studentid').val($(this).data('studentid'));
+                $('#edit-pay-amount').val($(this).data('amount'));
+                $('#edit-pay-method').val($(this).data('method'));
+                $('#edit-pay-type').val($(this).data('type'));
+                $('#edit-pay-ref').val($(this).data('ref') || '');
+                $('#edit-pay-date').val($(this).data('date') || '');
+            });
+
+            $('#add-pay-form').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("Save", "Payments")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Saved!', 'Payment added successfully.', 'success').then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                });
+            });
+
+            $('#edit-pay-form').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("Save", "Payments")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Updated!', 'Payment updated successfully.', 'success').then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Error', response.message, 'error');
+                        }
+                    },
+                    error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                });
+            });
+
+            $('.js-delete-pay').on('click', function (e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Delete this payment record? This cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel'
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '@Url.Action("Delete", "Payments")/' + id,
+                            type: 'POST',
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire('Deleted!', 'Payment has been deleted.', 'success').then(function () { location.reload(); });
+                                } else {
+                                    Swal.fire('Error', response.message, 'error');
+                                }
+                            },
+                            error: function () { Swal.fire('Error', 'Something went wrong. Please try again.', 'error'); }
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
+}

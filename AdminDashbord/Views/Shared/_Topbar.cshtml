@@ -1,0 +1,42 @@
+@{
+    var adminName = Context.Session.GetString("AdminName") ?? "Admin";
+}
+
+<div class="dash-topbar">
+
+    <div class="topbar-left">
+
+        <label for="sb-toggle" id="sbBtn" class="btn btn-ghost btn-sm sidebar-toggle-btn">
+            <i class="bi bi-layout-sidebar"></i>
+        </label>
+
+        <a asp-controller="Dashbord" asp-action="dashbord" class="topbar-brand">
+            <img src="~/assets/images/logo.svg" alt="Symphony Limited" class="topbar-logo" />
+        </a>
+
+        <span class="topbar-tag">Admin Panel</span>
+
+    </div>
+
+    <div class="topbar-right">
+
+        <a href="https://https://localhost:7239" class="topbar-admin">
+            <div class="topbar-avatar-initials">Web Site Visit</div>
+            <span>Website Vist</span>
+        </a>
+
+
+        <a asp-controller="AdminProfile" asp-action="Profile" class="topbar-admin">
+            <div class="topbar-avatar-initials">@adminName.Substring(0, 1).ToUpper()</div>
+            <span>@adminName</span>
+        </a>
+
+        <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-outline btn-sm">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </button>
+        </form>
+
+    </div>
+
+</div>

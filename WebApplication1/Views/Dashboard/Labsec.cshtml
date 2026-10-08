@@ -1,0 +1,145 @@
+﻿@using WebApplication1.Models
+@{
+    ViewData["Title"] = "Lab Sessions";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    var registered = (List<StudentLabRegistration>)ViewBag.LabRegistrations;
+    var available = (List<LabSession>)ViewBag.AvailableLabSessions;
+    var branches = (List<Branch>)ViewBag.Branches;
+}
+
+<div class="dash-welcome">
+    <h2>Lab <span style="color:var(--gold);">Sessions</span></h2>
+    <p>Register for lab sessions to get hands-on practice for your courses.</p>
+</div>
+
+<div class="table-wrapper" style="margin-bottom:24px;">
+    <div class="table-header"><h4>My Registered Sessions</h4></div>
+    <table>
+        <thead><tr><th>Session</th><th>Course</th><th>Registered On</th><th>Fee</th></tr></thead>
+        <tbody>
+            @if (registered.Any())
+            {
+                @foreach (var l in registered)
+                {
+                    <tr>
+                        <td>@l.LabSession?.SessionName</td>
+                        <td>@l.LabSession?.Course?.CourseName</td>
+                        <td>@(l.RegisterDate?.ToString("dd MMM yyyy") ?? "—")</td>
+                        <td>PKR @(l.LabSession?.SessionFee?.ToString("N0") ?? "0")</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="4" style="color:var(--text-muted);">You haven't registered for any lab session yet.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="table-wrapper">
+    <div class="table-header"><h4>Available Lab Sessions</h4></div>
+    <table>
+        <thead><tr><th>Session</th><th>Course</th><th>Fee</th><th></th></tr></thead>
+        <tbody>
+            @if (available.Any())
+            {
+                @foreach (var s in available)
+                {
+                    <tr>
+                        <td>@s.SessionName</td>
+                        <td>@s.Course?.CourseName</td>
+                        <td>PKR @(s.SessionFee?.ToString("N0") ?? "0")</td>
+                        <td>
+                            <a href="#labModal_@s.LabSessionId" class="btn btn-gold btn-sm">
+                                Register
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="4" style="color:var(--text-muted);">No lab sessions available right now.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@* Success / Error messages TempData se *@
+@if (TempData["LabSuccess"] != null)
+{
+    <div style="background:#1a3a2a;border:1px solid #2d6a4f;border-radius:var(--radius-md);padding:14px 18px;margin-bottom:16px;color:#52b788;">
+        <i class="bi bi-check-circle" style="margin-right:6px;"></i> @TempData["LabSuccess"]
+    </div>
+}
+@if (TempData["LabError"] != null)
+{
+    <div style="background:#3a1a1a;border:1px solid #6a2d2d;border-radius:var(--radius-md);padding:14px 18px;margin-bottom:16px;color:#e07070;">
+        <i class="bi bi-exclamation-circle" style="margin-right:6px;"></i> @TempData["LabError"]
+    </div>
+}
+
+<style>
+    .modal-overlay {
+        display: none;
+    }
+
+        .modal-overlay:target {
+            display: flex;
+        }
+</style>
+
+@* Registration forms — ek alag form har session ke liye *@
+@if (available.Any())
+{
+    foreach (var s in available)
+    {
+        <div class="modal-overlay" id="labModal_@s.LabSessionId">
+            <div class="modal-box">
+                <div class="modal-header">
+                    <h4>Lab Session Register</h4>
+                    <a href="/Dashboard/Labsec" class="modal-close"><i class="bi bi-x-lg"></i></a>
+                </div>
+                <form method="post" action="/Dashboard/RegisterLab">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="labSessionId" value="@s.LabSessionId" />
+                    <div class="modal-body">
+                        <div style="background:var(--bg-card2);border:1px solid var(--border-light);border-radius:var(--radius-md);padding:18px;margin-bottom:16px;">
+                            <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;">Session</div>
+                            <strong>@s.SessionName</strong>
+                            <div style="font-size:.85rem;color:var(--text-secondary);margin-top:6px;">@(s.Course?.CourseName ?? "")</div>
+                            <div style="font-size:.85rem;color:var(--gold);margin-top:6px;">Fee: PKR @(s.SessionFee?.ToString("N0") ?? "0")</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Branch</label>
+                            <select name="branchId" class="form-control">
+                                @foreach (var b in branches)
+                                {
+                                    <option value="@b.BranchId">@b.BranchName — @b.BranchCity</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Payment Method</label>
+                            <select name="paymentMethod" class="form-control">
+                                <option>Cash</option>
+                                <option>Cheque</option>
+                                <option>Draft</option>
+                            </select>
+                        </div>
+                        <div style="background:var(--gold-dim);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;font-size:.8rem;color:var(--text-secondary);">
+                            <i class="bi bi-info-circle" style="color:var(--gold);margin-right:5px;"></i>
+                            Payment aur registration fori ho jaati hai submit karte hi.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="/Dashboard/Labsec" class="btn btn-outline">Cancel</a>
+                        <button type="submit" class="btn btn-gold">Pay &amp; Register <i class="bi bi-check2"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+}
+
